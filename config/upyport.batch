@@ -1,0 +1,17 @@
+@echo off
+REM ---------------- CONFIG -----------------
+set RemoteUser=armin
+set RemoteHost=can-mon
+set LocalBaseDir=C:\Users\armin\OneDrive\6FS-MT-Jena_BA\Bachelorarbeit\upy_display_export
+set RemoteBaseDir=~/micropython
+REM -----------------------------------------
+
+REM ------- COPY WS5-PROJEKT TO HOST --------
+scp -r "%LocalBaseDir%\ws5_export" %RemoteUser%@%RemoteHost%:%RemoteBaseDir%
+scp -r "%LocalBaseDir%\ports\rp2\boards\4DSYS_RP2350" %RemoteUser%@%RemoteHost%:%RemoteBaseDir%/ports/rp2/boards
+
+REM ---------------- BUILD ------------------
+ssh %RemoteUser%@%RemoteHost% "cd ~/micropython && make -C mpy-cross && cd ports/rp2 && make submodules && make clean && make BOARD=4DSYS_RP2350 BUILD=buid-4Dsys FIRMWARE = 4dsys_upy.uf2 USER_C_MODULES="
+
+REM --------- COPY BUILD FROM HOST ----------
+scp -r %RemoteUser%@%RemoteHost%:"~/ports/rp2/build-4Dsys" "%LocalBaseDir%"

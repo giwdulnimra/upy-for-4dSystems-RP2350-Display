@@ -1,0 +1,9 @@
+{
+    "cmake.configureArgs": [
+        "-DPICO_BOARD=gen4_RP2350_70CT",
+        "-DPICO_SDK_PATH=C:/Program Files/Raspberry Pi/Pico SDK v2.1.0/pico-sdk",
+        "-DPICO_BOARD_HEADER_DIRS=C:/Program Files/4D Systems/4D Workshop 5 IDE/rp2350/boards",
+        "-DWS5_PROJECT_NAME=test_dynatext"
+    ],
+    "cmake.configureOnOpen": true
+}

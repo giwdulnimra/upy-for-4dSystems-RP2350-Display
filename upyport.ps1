@@ -11,26 +11,41 @@ $BuildDirectory = "build-Pico2w" #"build-4Dsys"
     #"build-CustomTest"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
-#scp -rv $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
-#scp -rv $LocalBaseDir"/micropython/ports/rp2/boards/4DSYS_RP2350/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
+scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
+scp -r $LocalBaseDir"/micropython/ports/rp2/boards/4DSYS_RP2350/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 
 # ---------------- BUILD ------------------
 $shContent = @"
 #!/bin/bash
 cd ~/micropython
-#make -C mpy-cross -j$(nproc)
+#make -C mpy-cross
 cd ports/rp2
 export BOARD=$TargetBoard
 export BUILD=$BuildDirectory
 #export USER_C_MODULES=
-#make -j$(nproc) BOARD=$TargetBoard BUILD=$BuildDirectory submodules
-#make -j$(nproc) BOARD=$TargetBoard BUILD=$BuildDirectory clean
-#make -j$(nproc) BOARD=$TargetBoard BUILD=$BuildDirectory 
+"@+@'
+
 make -j$(nproc) submodules
-#make -j$(nproc) clean
+
+while true; do
+    echo "Run 'make clean'? [y/n]: "
+    read run_clean
+    case $run_clean in
+        [yY])
+            make -j$(nproc) clean
+            break
+            ;;
+        [nN])
+            echo "Skipping 'make clean'"
+            break
+            ;;
+        *)
+            ;;
+    esac
+done
 make -j$(nproc)
-#FIRMWARE=4dsys_upy.uf2
-"@
+'@
+
 Set-Content -Path "$LocalBaseDir/config/build_upy.sh" -Value $shContent  -Encoding UTF8
 scp .\config\build_upy.sh "${RemoteUser}@${RemoteHost}:~/build_upy.sh"
 ssh $RemoteUser@$RemoteHost "bash ~/build_upy.sh"

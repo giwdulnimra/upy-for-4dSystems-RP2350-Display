@@ -12,7 +12,7 @@ $BuildDirectory = "build-Pico2w" #"build-4Dsys"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
-scp -r $LocalBaseDir"/micropython/ports/rp2/boards/4DSYS_RP2350/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
+scp -r $LocalBaseDir"/micropython/ports/rp2/boards/4DSYS_RP2350_70/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 
 # ---------------- BUILD ------------------
 $shContent = @"

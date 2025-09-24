@@ -1,0 +1,22 @@
+{
+    "deploy": [
+        "../deploy.md"
+    ],
+    "docs": "",
+    "features": [
+        "Dual-core",
+        "External Flash",
+        "USB-C"
+    ],
+    "images": [
+        ""
+    ],
+    "mcu": "rp2350",
+    "product": "4d-Systems RP2350 70CT-CLB",
+    "thumbnail": "",
+    "url": "4dsystems.com.au/products/gen4-rp2350-series/",
+    "variants": {
+        "RISCV": "RISC-V CPU mode"
+    },
+    "vendor": "4d-Systems"
+}

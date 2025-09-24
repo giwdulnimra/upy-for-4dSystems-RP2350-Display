@@ -1,2 +1,0 @@
-@echo off
-start "" "%~dp0\micropython\ports\rp2\boards\4DSYS_RP2350" 

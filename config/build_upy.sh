@@ -2,17 +2,17 @@
 cd ~/micropython
 #make -C mpy-cross
 cd ports/rp2
-export BOARD=RPI_PICO2_W
-export BUILD=build-Pico2w
+export BOARD=4DSYS_RP2350_70
+export BUILD=build-4Dsys
 #export USER_C_MODULES=
-make -j$(nproc) submodules
 
+make -j4 submodules
 while true; do
     echo "Run 'make clean'? [y/n]: "
     read run_clean
     case $run_clean in
         [yY])
-            make -j$(nproc) clean
+            make -j4 clean
             break
             ;;
         [nN])
@@ -23,4 +23,6 @@ while true; do
             ;;
     esac
 done
-make -j$(nproc)
+make -j4
+
+

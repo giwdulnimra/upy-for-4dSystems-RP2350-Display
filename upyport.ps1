@@ -6,13 +6,15 @@ $RemoteHost     =
     #"can-mon"
 $LocalBaseDir = #"."
     "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
-$TargetBoard = "RPI_PICO2_W" #"4DSYS_RP2350"
-$BuildDirectory = "build-Pico2w" #"build-4Dsys"
+$TargetBoard = "4DSYS_RP2350_70"
+    #"RPI_PICO2_W"
+$BuildDirectory = "build-4Dsys"
+    #"build-Pico2w"
     #"build-CustomTest"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
-scp -r $LocalBaseDir"/rp2/boards/4DSYS_RP2350_70/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
+scp -r $LocalBaseDir"/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 
 # ---------------- BUILD ------------------
 $shContent = @"
@@ -23,16 +25,16 @@ cd ports/rp2
 export BOARD=$TargetBoard
 export BUILD=$BuildDirectory
 #export USER_C_MODULES=
-"@+@'
 
-make -j$(nproc) submodules
+make -j4 submodules
+"@+@'
 
 while true; do
     echo "Run 'make clean'? [y/n]: "
     read run_clean
     case $run_clean in
         [yY])
-            make -j$(nproc) clean
+            make -j4 clean
             break
             ;;
         [nN])
@@ -43,7 +45,9 @@ while true; do
             ;;
     esac
 done
-make -j$(nproc)
+make -j4
+
+
 '@
 
 Set-Content -Path "$LocalBaseDir/config/build_upy.sh" -Value $shContent  -Encoding UTF8

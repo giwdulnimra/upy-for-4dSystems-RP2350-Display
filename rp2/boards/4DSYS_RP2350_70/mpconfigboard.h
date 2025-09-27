@@ -12,8 +12,7 @@
 // Override machine_uart.c definitions.
 // See weactstudio_rp2350b.h and note that the PICO_DEFAULT_UART configuration
 // is not currently referenced in machine_uart.c.
-#define MICROPY_HW_UART0_TX     (4)
-#define MICROPY_HW_UART0_RX     (5)
-#define MICROPY_HW_UART0_CTS    (-1)
-#define MICROPY_HW_UART0_RTS    (-1)
-#define MICROPY_HW_UART1_TX     (8)
+#define MICROPY_HW_UART1_TX     (4)
+#define MICROPY_HW_UART1_RX     (5)
+#define MICROPY_HW_UART1_CTS    (-1)
+#define MICROPY_HW_UART1_RTS    (-1)

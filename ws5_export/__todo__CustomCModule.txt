@@ -30,3 +30,7 @@ or to examples/usercmodule/micropython.cmake for CMake.
 For example, here’s how the to build the unix port with the example modules:
 cd micropython/ports/unix
 make USER_C_MODULES=../../examples/usercmodule
+
+
+
+MODULE - WRAPPER !!!

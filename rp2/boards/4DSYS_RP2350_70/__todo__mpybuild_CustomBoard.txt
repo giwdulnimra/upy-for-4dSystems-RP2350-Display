@@ -1,0 +1,33 @@
+#copy
+# existing Board in ports/rp2/boards
+#configure
+# CMakeLists.txt - !!!
+# mpconfigboard.cmake
+# mpconfigboard.h
+# pins.csv ?
+
+File to Modify	Purpose and Key Changes
+mpconfigboard.h
+	Defines core board-specific settings: microcontroller type, default frequency, and onboard LED pin.
+    Most important file: macros that control board behaviour:
+        BOARD_NAME — string shown at startup.
+        Flash settings: whether flash is internal/external, flash size and storage bytes (e.g. MICROPY_HW_FLASH_STORAGE_BYTES) — set correctly or you will get crashes. 
+        Peripheral enables: MICROPY_HW_ENABLE_UART_REPL, MICROPY_HW_ENABLE_SPI, MICROPY_HW_ENABLE_I2C, etc.
+        Default pins: default LED pin, default UART pins, default I²C/SPI pins if you want to expose them as defaults.
+        USB/boot related things: VBUS detect pin, if you need to change USB behaviour.
+    Many rp2 board behaviours are controlled by these macros; check an existing rp2 board file for examples.
+mpconfigboard.cmake
+    Set the Pico SDK board name used by CMake: set(PICO_BOARD "pico" /* or your SDK board */).
+    Add set(MICROPY_FROZEN_MANIFEST ${MICROPY_BOARD_DIR}/manifest.py) if you want frozen modules for this board.
+    This file is important because rp2 uses a CMake-based board configuration.
+pins.csv
+	Maps physical pins uC to pin names (and functions).
+manifest.py
+	(Optional) Lists Python files to be "frozen" into the firmware 
+	for production.
+
+
+CMakeLists.txt (rarely per-board; mostly port-wide)
+    Usually not needed per board, but if your board needs extra C 
+    sources or libraries, add them via the board cmake or by adding 
+    a tiny CMakeLists.txt in the board folder.

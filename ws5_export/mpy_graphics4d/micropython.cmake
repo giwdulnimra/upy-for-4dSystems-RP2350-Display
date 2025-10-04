@@ -4,24 +4,50 @@ add_library(usermod_graphics4d INTERFACE)
 # Füge Quellen hinzu (Bindings + Library)
 target_sources(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/modgraphics4d.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/lib/Graphics4D.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/lib/psram_tools/rp_pico_alloc.c
-    ${CMAKE_CURRENT_LIST_DIR}/lib/psram_tools/psram_tool.c
-    ${CMAKE_CURRENT_LIST_DIR}/lib/psram_tools/tlsf/tlsf.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/Graphics4D.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/rp_pico_alloc.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/psram_tool.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf/tlsf.c
 )
 
 # Include-Pfade
 target_include_directories(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_CURRENT_LIST_DIR}/lib
-    ${CMAKE_CURRENT_LIST_DIR}/lib/psram_tools
-    ${CMAKE_CURRENT_LIST_DIR}/lib/psram_tools/tlsf
+    ${CMAKE_CURRENT_LIST_DIR}/src
+    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools
+    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf
+)
+
+pico_generate_pio_header(usermod_graphics_4d 
+    INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb43.pio
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+pico_generate_pio_header(usermod_graphics_4d 
+    INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb50.pio
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+pico_generate_pio_header(usermod_graphics_4d
+    INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb70.pio
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+pico_generate_pio_header(usermod_graphics_4d
+    INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb90.pio
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+
+# PIO-Header as Sources
+target_sources(usermod_graphics4d INTERFACE
+    ${CMAKE_CURRENT_BINARY_DIR}/src/rgb43.pio.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/rgb50.pio.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/rgb70.pio.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/rgb90.pio.h
+)
+
+target_compile_definitions(usermod_graphics4d INTERFACE
+    USE_4D_FONT2
+    USE_4D_FONT3
+    USE_4D_FONT4
 )
 
 # Verknüpfe mit dem generischen usermod-Target
 target_link_libraries(usermod INTERFACE usermod_graphics4d)
-
-pico_generate_pio_header(graphics_4d ${CMAKE_CURRENT_LIST_DIR}/lib/rgb43.pio)
-pico_generate_pio_header(graphics_4d ${CMAKE_CURRENT_LIST_DIR}/lib/rgb50.pio)
-pico_generate_pio_header(graphics_4d ${CMAKE_CURRENT_LIST_DIR}/lib/rgb70.pio)
-pico_generate_pio_header(graphics_4d ${CMAKE_CURRENT_LIST_DIR}/lib/rgb90.pio)

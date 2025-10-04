@@ -1,0 +1,32 @@
+*.c / *.cpp / *.h
+    source code files for your module.
+micropython.mk
+    contains the Makefile fragment for this module.
+micropython.cmake
+    contains the CMake configuration for this module.
+
+
+
+basic example:
+micropython/
+└──examples/
+   └──usercmodule/
+      └──cexample/
+         ├── examplemodule.c
+         ├── micropython.mk
+         └── micropython.cmake
+->micropython/
+    └── ws5export/
+        └── Graphics4D
+        └── process_module_wd
+            └── micropython.mk
+            └── micropython.cmake
+
+
+For building the example modules which come with MicroPython, 
+set USER_C_MODULES to the examples/usercmodule directory for Make, 
+or to examples/usercmodule/micropython.cmake for CMake.
+
+For example, here’s how the to build the unix port with the example modules:
+cd micropython/ports/unix
+make USER_C_MODULES=../../examples/usercmodule

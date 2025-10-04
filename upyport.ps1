@@ -24,7 +24,7 @@ cd ~/micropython
 cd ports/rp2
 export BOARD=$TargetBoard
 export BUILD=$BuildDirectory
-#export USER_C_MODULES=~/micropython/ws5_export
+#export USER_C_MODULES=~/micropython/ws5_export/Graphics4D/src
 
 make -j4 submodules
 "@+@'

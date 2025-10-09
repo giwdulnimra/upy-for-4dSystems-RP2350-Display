@@ -3,7 +3,7 @@ GRAPHICS4D_DIR := $(USERMOD_DIR)
 
 # original C++-Library
 SRC_USERMOD_LIB_CXX += \
-	$(GRAPHICS4D_DIR9)/lib/Graphics4D.cpp
+	$(GRAPHICS4D_DIR)/lib/Graphics4D.cpp
 # Binding/Wrapper-File
 SRC_USERMOD_CXX += \
 	$(GRAPHICS4D_DIR)/modgraphics4d.cpp
@@ -30,7 +30,7 @@ CXXFLAGS_USERMOD += \
 	-I$(GRAPHICS4D_DIR)/src/psram_tools/tlsf/
 
 # Fonts aktivieren
-CXXFLAGS_USERMOD +=
+CXXFLAGS_USERMOD += \
 	-DUSE_4D_FONT2 \
 	-DUSE_4D_FONT3 \
 	-DUSE_4D_FONT4

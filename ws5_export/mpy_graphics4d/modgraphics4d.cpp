@@ -1,10 +1,74 @@
-exter "C" {
+extern "C" {
 #include "py/obj.h"
 #include "py/runtime.h"
+//#include "py/builtin.h"
 }
 #include "Graphics4D.h"
 
+/*
+TEXTAREA
+*/
+typedef struct _mp_obj_textarea_t {
+    mp_obj_base_t base;
+    TextArea *ta; // Zeiger auf die native C++-Instanz
+} mp_obj_textarea_t;
 
+// Factory-Funktion für TextArea
+STATIC mp_obj_t textarea_make_new(size_t n_args, const mp_obj_t *args) {
+    if (n_args != 6) {
+        mp_raise_TypeError(MP_ERROR_TEXT("CreateTextArea(x1, y1, x2, y2, fg, bg)"));
+    }
+
+    int x1 = mp_obj_get_int(args[0]);
+    int y1 = mp_obj_get_int(args[1]);
+    int x2 = mp_obj_get_int(args[2]);
+    int y2 = mp_obj_get_int(args[3]);
+    uint16_t fg = (uint16_t)mp_obj_get_int(args[4]);
+    uint16_t bg = (uint16_t)mp_obj_get_int(args[5]);
+
+    mp_obj_textarea_t *o = m_new_obj(mp_obj_textarea_t);
+    o->base.type = (mp_obj_type_t *)&graphics4d_TextArea_type;
+
+    o->ta = Graphics4D::GetInstance().CreateTextArea(x1, y1, x2, y2, fg, bg);
+    if (!o->ta) {
+        m_del_obj(mp_obj_textarea_t, o);
+        mp_raise_msg(&mp_type_MemoryError, MP_ERROR_TEXT("CreateTextArea failed"));
+    }
+
+    return MP_OBJ_FROM_PTR(o);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(textarea_make_new_obj, 6, 6, textarea_make_new);
+
+// Zerstörung / Freigabe
+STATIC mp_obj_t textarea_deinit(mp_obj_t self_in) {
+    mp_obj_textarea_t *self = MP_OBJ_TO_PTR(self_in);
+    if (self->ta) {
+        delete self->ta;
+        self->ta = nullptr;
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(textarea_deinit_obj, textarea_deinit);
+
+// Methoden-Tabelle (nur close)
+STATIC const mp_rom_map_elem_t textarea_locals_table[] = {
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&textarea_deinit_obj) },
+};
+STATIC MP_DEFINE_CONST_DICT(textarea_locals, textarea_locals_table);
+
+// Typdefinition
+const mp_obj_type_t graphics4d_TextArea_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_TextArea,
+    .make_new = NULL, // Konstruktion nur über Factory
+    .locals_dict = (mp_obj_dict_t*)&textarea_locals,
+};
+
+
+
+/*
+GRAPHICS4D
+*/
 typedef struct _mp_obj_graphics4d_t {
     mp_obj_base_t base;
     Graphics4D *gfx; // Pointer to the C++ Graphics4D object
@@ -20,17 +84,13 @@ STATIC mp_obj_t graphics4d_make_new(const mp_obj_type_t *type,
     // Create a new instance of the Graphics4D object
     mp_obj_graphics4d_t *self = m_new_obj(mp_obj_graphics4d_t); // Allocate memory for the object
     self->base.type = (mp_obj_type_t *)type;
-    self->gfx = NULL;
-    self->gfx = new Graphics4D();
+    Graphics4D *native = new (std::nothrow) Graphics4D();
 
-    Graphics4D *native = NULL;
-    native = new (std::nothrow) Graphics4D();
+    // Secure-check Memory allocation
     if (!native) { // Error-Mapping to MicroPython
         mp_raise_msg(&mp_type_MemoryError, MP_ERROR_TEXT("Failed to allocate Graphics4D"));
     }
-
     self->gfx = native;
-    
     bool ok = self->gfx->Initialize();
     if (!ok) {
         // cleanup and raise exception
@@ -53,17 +113,49 @@ STATIC mp_obj_t graphics4d_deinit(mp_obj_t self_in) {
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(graphics4d_deinit_obj, graphics4d_deinit);
-
-// Method: initialize()
-STATIC mp_obj_t graphics4d_initialize(mp_obj_t self_in) {
-    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
-    return mp_obj_new_bool(self->gfx->Initialize());
+// close()-alias for deinit
+STATIC mp_obj_t graphics4d_close(mp_obj_t self_in) {
+    return graphics4d_deinit(self_in);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(graphics4d_initialize_obj, graphics4d_initialize);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(graphics4d_close_obj, graphics4d_close);
+
+// convenience guard macro for wrappers
+#define GFX_CHECK(self)     if (!self || !(self)->gfx) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Graphics4D not initialized or closed properly"));}
+
+// Method: DrawWidget
+// Method: SetFrameBuffer
+// Method: Reset
+// Method: BlendColor
+// Method: GetWidth
+// Method: GetHeight
+// Method: SetBacklightLevel
+// Method: Contrast
+// Method: ScreenMode
+// Method: SetAddressWindow
+// Method: SendFrameBuffer
+// Method: GetFrameBuffer
+// Method: SetBackgroundColor
+// Method: ClipWindow
+
+
+// Method: move_to(x, y)
+STATIC mp_obj_t graphics4d_move_to(mp_obj_t self_in, mp_obj_t x_obj, mp_obj_t y_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
+    GFX_CHECK(self);
+    int x = mp_obj_get_int(x_obj);
+    int y = mp_obj_get_int(y_obj);
+    self->gfx->MoveTo(x, y);
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(graphics4d_move_to_obj, graphics4d_move_to);
+
+// Method: MoveRel
+
 
 // Method: cls(draw_fb=True)
 STATIC mp_obj_t graphics4d_cls(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     bool draw_fb = (n_args > 1) ? mp_obj_is_true(args[1]) : true;
     self->gfx->Cls(draw_fb);
     return mp_const_none;
@@ -73,6 +165,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_cls_obj, 1, 2, graphics4d_
 // Method: rectangle_filled(x1, y1, x2, y2, color, draw_fb=True)
 STATIC mp_obj_t graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
     int y1 = mp_obj_get_int(args[2]);
     int x2 = mp_obj_get_int(args[3]);
@@ -84,10 +177,16 @@ STATIC mp_obj_t graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *args)
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_rectangle_filled_obj, 6, 7, graphics4d_rectangle_filled);
 
+// Method: RectangleFilledWithAlpha
+// Method: Hline
+// Method: Vline
+// Method: Rectangle
+
 
 // Method: put_pixel(x, y, color, draw_fb=True)
 STATIC mp_obj_t graphics4d_put_pixel(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     int x = mp_obj_get_int(args[1]);
     int y = mp_obj_get_int(args[2]);
     uint16_t color = (uint16_t)mp_obj_get_int(args[3]);
@@ -100,6 +199,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_put_pixel_obj, 4, 5, graph
 // Method: line(x1, y1, x2, y2, color, draw_fb=True)
 STATIC mp_obj_t graphics4d_line(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
     int y1 = mp_obj_get_int(args[2]);
     int x2 = mp_obj_get_int(args[3]);
@@ -111,9 +211,14 @@ STATIC mp_obj_t graphics4d_line(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_line_obj, 6, 7, graphics4d_line);
 
+// Method: Ellipse
+// Method: EllipseFilled
+
+
 // Method: circle_filled(xc, yc, radius, color, draw_fb=True)
 STATIC mp_obj_t graphics4d_circle_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     int xc = mp_obj_get_int(args[1]);
     int yc = mp_obj_get_int(args[2]);
     unsigned int radius = (unsigned int)mp_obj_get_int(args[3]);
@@ -124,19 +229,32 @@ STATIC mp_obj_t graphics4d_circle_filled(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_circle_filled_obj, 5, 6, graphics4d_circle_filled);
 
-// Method: move_to(x, y)
-STATIC mp_obj_t graphics4d_move_to(mp_obj_t self_in, mp_obj_t x_obj, mp_obj_t y_obj) {
-    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
-    int x = mp_obj_get_int(x_obj);
-    int y = mp_obj_get_int(y_obj);
-    self->gfx->MoveTo(x, y);
-    return mp_const_none;
-}
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(graphics4d_move_to_obj, graphics4d_move_to);
+// Method: Arc
+// Method: ArcFilled
+// Method: CircleFilled
+// Method: Triangle
+// Method: TriangleFilled
+// Methon: Polyline
+// Method: Polygon
+// Method: PolygonFilled
+// Method: __write_command
+// Method: __write_data
+// Method: __read_data
+// Method: __get_aux_buffer x2
+// Method: SetFont
+// Method: SetFontForeground
+// Method: SetFontBackground
+// Method: SetFontForeground?
+// Method: SetFontBackground?
+// Method: GetStringWidth
+// Method: GetFontHeight
+// Method: __putch
+
 
 // Method: print(text, draw_fb=True)
 STATIC mp_obj_t graphics4d_print(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    GFX_CHECK(self);
     const char *str = mp_obj_str_get_str(args[1]);
     bool draw_fb = (n_args > 2) ? mp_obj_is_true(args[2]) : true;
     self->gfx->print(str, draw_fb);
@@ -144,7 +262,50 @@ STATIC mp_obj_t graphics4d_print(size_t n_args, const mp_obj_t *args) {
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(graphics4d_print_obj, 2, 3, graphics4d_print);
 
+// Method: printf
+// Method: CreateTextArea
+// Method: print (TA)
+// Method: printf (TA)
 
+/* Class: ImageControl - 2358 (?)
+
+ * Class: GraphicsMedia4D - 2597
+// Method: LoadImageControl          (zweimal überladen)    einen Wrapper schreiben, der zur Laufzeit entscheidet, welche C++-Überladung aufzurufen ist
+// Method: GetCount
+// Method: GetInfo
+// Method: SetProperties
+// Method: SetValue
+// Method: GetValue
+// Method: GetFrames
+// Method: SetPosition
+// Method: Clear
+// Method: Show
+// Method: ShowForm
+// Method: Touched
+// Method: __draw_to_buffer          (zweimal / überladen)
+// Method: __show_digits
+// Method: __show_2_frame_gauge
+// Method: __show_linear_gauge
+// Method: __show_knob
+// Method: __redraw_form_region
+
+ * Class: GraphicsTouch4D - 4326
+// Method: Initialize
+// Method: Calibrate
+// Method: __set_calibration
+// Method: __get_calibration
+// Method: GetPoints
+// Method: GetStatus
+// Method: GetID
+// Method: GetX
+// Method: GetY
+// Method: __get_raw_x
+// Method: __get_raw_y
+// Method: GetWeight
+// Method: GetArea
+ */
+
+//
 // Define locals (methods) table for the Python object
 STATIC const mp_rom_map_elem_t graphics4d_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&graphics4d_deinit_obj) },

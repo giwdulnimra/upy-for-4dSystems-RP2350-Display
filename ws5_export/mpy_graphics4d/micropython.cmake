@@ -16,23 +16,28 @@ target_include_directories(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf
+    ${CMAKE_CURRENT_BINARY_DIR}/src
 )
 
-pico_generate_pio_header(usermod_graphics_4d 
+pico_generate_pio_header(usermod_graphics4d 
     INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb43.pio
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src
     )
-pico_generate_pio_header(usermod_graphics_4d 
+pico_generate_pio_header(usermod_graphics4d 
     INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb50.pio
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src
     )
-pico_generate_pio_header(usermod_graphics_4d
+pico_generate_pio_header(usermod_graphics4d
     INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb70.pio
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src
     )
-pico_generate_pio_header(usermod_graphics_4d
+pico_generate_pio_header(usermod_graphics4d
     INPUT ${CMAKE_CURRENT_LIST_DIR}/src/rgb90.pio
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src
+    )
+pico_generate_pio_header(usermod_graphics4d
+    INPUT ${CMAKE_CURRENT_LIST_DIR}/src/bus_2040.pio
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src
     )
 
 # PIO-Header as Sources
@@ -49,5 +54,5 @@ target_compile_definitions(usermod_graphics4d INTERFACE
     USE_4D_FONT4
 )
 
-# Verknüpfe mit dem generischen usermod-Target
+# Verknüpfe mit dem generischen usermod-Target (MicroPython-Link)
 target_link_libraries(usermod INTERFACE usermod_graphics4d)

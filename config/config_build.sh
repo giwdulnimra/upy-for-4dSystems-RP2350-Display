@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [ -d "C:\Users\armin/micropython" ]; then
+cd ~
+if [ -d "~/micropython" ]; then
     git fetch
     git checkout dev-branch || git checkout -b dev-branch origin/main
     git branch --set-upstream-to=origin/main dev-branch

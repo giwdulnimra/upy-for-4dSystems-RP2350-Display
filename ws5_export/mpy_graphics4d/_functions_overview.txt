@@ -1,0 +1,67 @@
+graphics4d / - / graphicsmedia4d
+
+DrawWidget - mp_grafics4d_draw_widget
+BlendColor - mp_graphics4d_blend_color
+getWidth - mp_graphics4d_get_width
+getHeight - mp_graphics4d_get_height
+setBacklightLevel - mp_graphics4d_set_backlight_level
+setContrast - mp_graphics4d_contrast
+Screenmode - mp_graphics4d_screenmode
+setBackgroundColor - mp_graphics4d_set_background_color
+ClipWindow - mp_graphics4d_clip_window
+MoveTo - mp_graphics4d_move_to
+MoveRel - mp_graphics4d_move_rel
+ClearScreen - mp_graphics4d_clear_screen
+RectangleF - mp_graphics4d_rectangle_filled
+RectangleFAlpha - mp_graphics4d_rectangle_filled_alpha
+HLine - mp_graphics4d_hline
+VLine - mp_graphics4d_vline
+Rectangle - mp_graphics4d_rectangle
+Pixel - mp_graphics4d_put_pixel
+Line - mp_graphics4d_line
+Ellipse - mp_graphics4d_ellipse
+EllipseF - mp_graphics4d_ellipse_filled
+Circle - mp_graphics4d_circle
+Arc - mp_graphics4d_arc
+ArcF - mp_graphics4d_arc_filled
+CircleF - mp_graphics4d_circle_filled
+Triangle - mp_graphics4d_triangle
+TriangleF - mp_graphics4d_triangle_filled
+Polyline - mp_graphics4d_polyline
+Polygon - mp_graphics4d_polygon
+PolygonF - mp_graphics4d_polygon_filled
+setFont - mp_graphics4d_set_font
+setFontForeground - mp_graphics4d_set_font_fg
+setFontBackground - mp_graphics4d_set_font_bg
+getStringWidth - mp_graphics4d_get_string_width
+getFontHeight - mp_graphics4d_get_font_height
+print - mp_graphics4d_print
+printf - mp_graphics4d_printf
+CreateTextArea - mp_graphics4d_create_text_area
+LoadImageControl - mp_graphics4d_load_image_control
+getCount - mp_graphics4d_get_count
+getInfo - mp_graphics4d_get_info
+setProperties - mp_graphics4d_set_properties
+setValue - mp_graphics4d_set_value
+getValue - mp_graphics4d_get_value
+getFrames - mp_graphics4d_get_frames
+setPosition - mp_graphics4d_set_position
+ClearControl - mp_graphics4d_clear_control
+ShowControl - mp_graphics4d_show_control
+ShowForm - mp_graphics4d_show_form
+Touched - mp_graphics4d_touched
+
+
+touch
+
+Touch4D - mp_touch4d_make_new
+__del__ - mp_touch4d_deinit
+close - mp_touch4d_close
+Calibrate - mp_touch4d_calibrate
+getPoints - mp_touch4d_get_points
+getStatus - mp_touch4d_get_status
+getID - mp_touch4d_get_id
+getX - mp_touch4d_get_x
+getY - mp_touch4d_get_y
+getWeight - mp_touch4d_get_weight
+getArea - mp_touch4d_get_area

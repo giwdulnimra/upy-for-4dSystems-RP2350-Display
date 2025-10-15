@@ -10,12 +10,16 @@ target_sources(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf/tlsf.c
 )
 
+set(PICO_STDIO_USB 1)
+set(PICO_STDIO_UART 0)
+
 # Include-Pfade
 target_include_directories(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/src
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf
+    ${CMAKE_CURRENT_LIST_DIR}/src/fonts
     ${CMAKE_CURRENT_BINARY_DIR}/src
 )
 
@@ -49,6 +53,7 @@ target_sources(usermod_graphics4d INTERFACE
 )
 
 target_compile_definitions(usermod_graphics4d INTERFACE
+    USE_4D_FONT1
     USE_4D_FONT2
     USE_4D_FONT3
     USE_4D_FONT4

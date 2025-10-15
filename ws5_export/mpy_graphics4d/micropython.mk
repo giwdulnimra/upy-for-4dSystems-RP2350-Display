@@ -28,9 +28,11 @@ CXXFLAGS_USERMOD += \
 	-I$(GRAPHICS4D_DIR)/src/ \
 	-I$(GRAPHICS4D_DIR)/src/psram_tools/ \
 	-I$(GRAPHICS4D_DIR)/src/psram_tools/tlsf/
+	-I$(GRAPHICS4D_DIR)/src/fonts/
 
 # Fonts aktivieren
 CXXFLAGS_USERMOD += \
+	-DUSE_4D_FONT1 \
 	-DUSE_4D_FONT2 \
 	-DUSE_4D_FONT3 \
 	-DUSE_4D_FONT4

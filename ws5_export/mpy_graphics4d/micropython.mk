@@ -35,4 +35,19 @@ CXXFLAGS_USERMOD += \
 	-DUSE_4D_FONT1 \
 	-DUSE_4D_FONT2 \
 	-DUSE_4D_FONT3 \
-	-DUSE_4D_FONT4
+	-DUSE_4D_FONT4 \
+	-I$GRAPHICS4D_DIR/src
+
+# Rule to convert the raw binary graphics data (4d.gcx) into a linkable object file (graphics.o)
+$(GCX_OBJ_FILE): $(GCX_SOURCE)
+	@echo "GEN $(notdir $@) from $(notdir $<)"
+	@mkdir -p $(BUILD)
+	$(Q)cp $< $(GCX_BIN_FILE)
+	$(Q)$(OBJCOPY) -I binary -O elf32-littlearm -B arm --rename-section .data=.graphics $(GCX_BIN_FILE) $@
+
+# 4D-GCX-File
+GCX_SOURCE := \
+	$(GRAPHICS4D_DIR)/src/4d.gcx
+GCX_BIN_FILE := $(BUILD)/$(notdir $(GCX_SOURCE))
+GCX_OBJ_FILE := $(BUILD)/graphics.o
+SRC_USERMOD_OBJS += $(GCX_OBJ_FILE)

@@ -3,6 +3,7 @@ extern "C" {
 #include "py/runtime.h"
 //#include "py/builtin.h"
 }
+#include "GeneratedConsts.h"
 #include "Graphics4D.h"
 
 // Forward declarations for type objects
@@ -671,8 +672,11 @@ STATIC mp_obj_t mp_graphics4d_create_text_area(mp_obj_t x1_obj, mp_obj_t y1_obj,
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_6(mp_graphics4d_create_text_area_obj, mp_graphics4d_create_text_area);
 
-
+//###
 /* Class: ImageControl - 2358 (?)
+// Method: ImageControl
+// Method: ~ImageControl
+ */
 
 /*
 GRAPHICSMEDIA4D

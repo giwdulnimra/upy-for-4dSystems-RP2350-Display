@@ -14,7 +14,8 @@ $BuildDirectory = "build-4Dsys"
 $ProjektName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
-copy "{$LocalBaseDir}/ws5_export/{$Projektname}.gcx" "{$LocalBaseDir}/ws5_export/4d.gcx"
+copy "{$LocalBaseDir}/ws5_export/{$Projektname}.gcx" "{$LocalBaseDir}/ws5_export/mpy_graphics4d/src/4d.gcx"
+copy "{$LocalBaseDir}/ws5_export/GeneratedConsts.h" "{$LocalBaseDir}/ws5_export/mpy_graphics4d/src/GeneratedConsts.h"
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
 scp -r $LocalBaseDir"/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 

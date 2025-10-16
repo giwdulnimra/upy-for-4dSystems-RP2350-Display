@@ -11,9 +11,10 @@ $TargetBoard = "4DSYS_RP2350_70"
 $BuildDirectory = "build-4Dsys"
     #"build-Pico2w"
     #"build-CustomTest"
-$ProjeksName = "SliderExample"
+$ProjektName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
+copy "{$LocalBaseDir}/ws5_export/{$Projektname}.gcx" "{$LocalBaseDir}/ws5_export/4d.gcx"
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
 scp -r $LocalBaseDir"/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 
@@ -25,7 +26,7 @@ cd ~/micropython
 cd ports/rp2
 export BOARD=$TargetBoard
 export BUILD=$BuildDirectory
-#export USER_C_MODULES=~/micropython/ws5_export/Graphics4D/src
+export USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d
 
 make -j4 submodules
 "@+@'

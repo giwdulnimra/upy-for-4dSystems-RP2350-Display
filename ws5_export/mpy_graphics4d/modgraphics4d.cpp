@@ -58,7 +58,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(mp_textarea_deinit_obj, mp_textarea_deinit);
 
 // Define locals(methods)-table for the TextArea4D Python object
 STATIC const mp_rom_map_elem_t mp_textarea_locals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_textarea_deinit_obj) },
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_textarea_deinit) },
 };
 STATIC MP_DEFINE_CONST_DICT(mp_textarea_locals, mp_textarea_locals_table);
 
@@ -828,9 +828,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_touched_obj, mp_graphics4d_touche
 
 // Define locals(methods)-table for the Graphics4D Python object
 STATIC const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new_obj) },
-    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_graphics4d_deinit_obj) },
-    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_graphics4d_close_obj) },
+    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new) },
+    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_graphics4d_deinit) },
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_graphics4d_close) },
     { MP_ROM_QSTR(MP_QSTR_DrawWidget), MP_ROM_PTR(&mp_graphics4d_draw_widget)},
     { MP_ROM_QSTR(MP_QSTR_BlendColor), MP_ROM_PTR(&mp_graphics4d_blend_color)},
     { MP_ROM_QSTR(MP_QSTR_getWidth), MP_ROM_PTR(&mp_graphics4d_get_width)},
@@ -854,31 +854,31 @@ STATIC const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_HLine), MP_ROM_PTR(&mp_graphics4d_hline)},
     { MP_ROM_QSTR(MP_QSTR_VLine), MP_ROM_PTR(&mp_graphics4d_vline)},
     { MP_ROM_QSTR(MP_QSTR_Pixel), MP_ROM_PTR(&mp_graphics4d_put_pixel)},
-    { MP_ROM_QSTR(MP_QSTR_Triangle), MP_ROM_PTR(&mp_graphics4d_triangle_obj)},
-    { MP_ROM_QSTR(MP_QSTR_TriangleF), MP_ROM_PTR(&mp_graphics4d_triangle_filled_obj)},
-    { MP_ROM_QSTR(MP_QSTR_Polyline), MP_ROM_PTR(&mp_graphics4d_polyline_obj)},
-    { MP_ROM_QSTR(MP_QSTR_Polygon), MP_ROM_PTR(&mp_graphics4d_polygon_obj)},
-    { MP_ROM_QSTR(MP_QSTR_PolygonF), MP_ROM_PTR(&mp_graphics4d_polygon_filled_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setFont), MP_ROM_PTR(&mp_graphics4d_set_font_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setFontForeground), MP_ROM_PTR(&mp_graphics4d_set_font_fg_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setFontBackground), MP_ROM_PTR(&mp_graphics4d_set_font_bg_obj)},
-    { MP_ROM_QSTR(MP_QSTR_getStringWidth), MP_ROM_PTR(&mp_graphics4d_get_string_width_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Triangle), MP_ROM_PTR(&mp_graphics4d_triangle)},
+    { MP_ROM_QSTR(MP_QSTR_TriangleF), MP_ROM_PTR(&mp_graphics4d_triangle_filled)},
+    { MP_ROM_QSTR(MP_QSTR_Polyline), MP_ROM_PTR(&mp_graphics4d_polyline)},
+    { MP_ROM_QSTR(MP_QSTR_Polygon), MP_ROM_PTR(&mp_graphics4d_polygon)},
+    { MP_ROM_QSTR(MP_QSTR_PolygonF), MP_ROM_PTR(&mp_graphics4d_polygon_filled)},
+    { MP_ROM_QSTR(MP_QSTR_setFont), MP_ROM_PTR(&mp_graphics4d_set_font)},
+    { MP_ROM_QSTR(MP_QSTR_setFontForeground), MP_ROM_PTR(&mp_graphics4d_set_font_fg)},
+    { MP_ROM_QSTR(MP_QSTR_setFontBackground), MP_ROM_PTR(&mp_graphics4d_set_font_bg)},
+    { MP_ROM_QSTR(MP_QSTR_getStringWidth), MP_ROM_PTR(&mp_graphics4d_get_string_width)},
     { MP_ROM_QSTR(MP_QSTR_getFontHeight), MP_ROM_PTR(&mp_graphics4d_get_font_height)},
     { MP_ROM_QSTR(MP_QSTR_print), MP_ROM_PTR(&mp_graphics4d_print)},
     { MP_ROM_QSTR(MP_QSTR_printf), MP_ROM_PTR(&mp_graphics4d_printf)},
-    { MP_ROM_QSTR(MP_QSTR_createTextArea), MP_ROM_PTR(&mp_graphics4d_create_text_area_obj)},
-    { MP_ROM_QSTR(MP_QSTR_LoadImageControl), MP_ROM_PTR(&mp_graphics4d_load_image_control_obj)},
-    { MP_ROM_QSTR(MP_QSTR_getCount), MP_ROM_PTR(&mp_graphics4d_get_count_obj)},
-    { MP_ROM_QSTR(MP_QSTR_getInfo), MP_ROM_PTR(&mp_graphics4d_get_info_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setProperties), MP_ROM_PTR(&mp_graphics4d_set_properties_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&mp_graphics4d_set_value_obj)},
-    { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&mp_graphics4d_get_value_obj)},
-    { MP_ROM_QSTR(MP_QSTR_getFrames), MP_ROM_PTR(&mp_graphics4d_get_frames_obj)},
-    { MP_ROM_QSTR(MP_QSTR_setPosition), MP_ROM_PTR(&mp_graphics4d_set_position_obj)},
-    { MP_ROM_QSTR(MP_QSTR_ClearControl), MP_ROM_PTR(&mp_graphics4d_clear_control_obj)},
-    { MP_ROM_QSTR(MP_QSTR_ShowControl), MP_ROM_PTR(&mp_graphics4d_show_control_obj)},
-    { MP_ROM_QSTR(MP_QSTR_ShowForm), MP_ROM_PTR(&mp_graphics4d_show_form_obj)},
-    { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_graphics4d_touched_obj)},
+    { MP_ROM_QSTR(MP_QSTR_createTextArea), MP_ROM_PTR(&mp_graphics4d_create_text_area)},
+    { MP_ROM_QSTR(MP_QSTR_LoadImageControl), MP_ROM_PTR(&mp_graphics4d_load_image_control)},
+    { MP_ROM_QSTR(MP_QSTR_getCount), MP_ROM_PTR(&mp_graphics4d_get_count)},
+    { MP_ROM_QSTR(MP_QSTR_getInfo), MP_ROM_PTR(&mp_graphics4d_get_info)},
+    { MP_ROM_QSTR(MP_QSTR_setProperties), MP_ROM_PTR(&mp_graphics4d_set_properties)},
+    { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&mp_graphics4d_set_value)},
+    { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&mp_graphics4d_get_value)},
+    { MP_ROM_QSTR(MP_QSTR_getFrames), MP_ROM_PTR(&mp_graphics4d_get_frames)},
+    { MP_ROM_QSTR(MP_QSTR_setPosition), MP_ROM_PTR(&mp_graphics4d_set_position)},
+    { MP_ROM_QSTR(MP_QSTR_ClearControl), MP_ROM_PTR(&mp_graphics4d_clear_control)},
+    { MP_ROM_QSTR(MP_QSTR_ShowControl), MP_ROM_PTR(&mp_graphics4d_show_control)},
+    { MP_ROM_QSTR(MP_QSTR_ShowForm), MP_ROM_PTR(&mp_graphics4d_show_form)},
+    { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_graphics4d_touched)},
 };
 STATIC MP_DEFINE_CONST_DICT(mp_graphics4d_locals_dict, mp_graphics4d_locals_dict_table);
 

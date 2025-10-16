@@ -825,6 +825,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_touched_obj, mp_graphics4d_touche
 // ~ __show_knob
 // ~ __redraw_form_region
 
+
 // Define locals(methods)-table for the Graphics4D Python object
 STATIC const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new_obj) },

@@ -11,6 +11,7 @@ $TargetBoard = "4DSYS_RP2350_70"
 $BuildDirectory = "build-4Dsys"
     #"build-Pico2w"
     #"build-CustomTest"
+$ProjeksName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"

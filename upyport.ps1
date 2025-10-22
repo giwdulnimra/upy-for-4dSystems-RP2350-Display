@@ -1,8 +1,8 @@
 # ---------------- CONFIG -----------------
 $RemoteUser     = "armin"
 $RemoteHost     = 
-    "10.19.28.28"
-    #"code.protronic.local"
+    #"10.19.28.19"
+    "code.protronic.local"
     #"can-mon"
 $LocalBaseDir = #"."
     "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
@@ -14,8 +14,8 @@ $BuildDirectory = "build-4Dsys"
 $ProjektName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
-copy "{$LocalBaseDir}/ws5_export/{$Projektname}.gcx" "{$LocalBaseDir}/ws5_export/mpy_graphics4d/src/4d.gcx"
-copy "{$LocalBaseDir}/ws5_export/GeneratedConsts.h" "{$LocalBaseDir}/ws5_export/mpy_graphics4d/src/GeneratedConsts.h"
+copy $LocalBaseDir"/ws5_export/$ProjektName.gcx" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/4d.gcx"
+copy $LocalBaseDir"/ws5_export/GeneratedConsts.h" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/GeneratedConsts.h"
 scp -r $LocalBaseDir"/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
 scp -r $LocalBaseDir"/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
 
@@ -49,11 +49,9 @@ while true; do
     esac
 done
 make -j4
-
-
 '@
 
-Set-Content -Path "$LocalBaseDir/config/build_upy.sh" -Value $shContent  -Encoding UTF8
+Set-Content -Path "$LocalBaseDir/config/build_upy.sh" -Value ($shContent -replace "`r`n", "`n") -Encoding UTF8 -NoNewline
 scp .\config\build_upy.sh "${RemoteUser}@${RemoteHost}:~/build_upy.sh"
 ssh $RemoteUser@$RemoteHost "bash ~/build_upy.sh"
 

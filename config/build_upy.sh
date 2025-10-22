@@ -4,7 +4,7 @@ cd ~/micropython
 cd ports/rp2
 export BOARD=4DSYS_RP2350_70
 export BUILD=build-4Dsys
-#export USER_C_MODULES=
+export USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d
 
 make -j4 submodules
 while true; do
@@ -24,5 +24,3 @@ while true; do
     esac
 done
 make -j4
-
-

@@ -16,7 +16,7 @@ target_sources(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf/tlsf.c
     # --- FatFS / SD Card Source Files ---
     # FatFs Core
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/diskio.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src/glue.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ff.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ffsystem.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ffunicode.c
@@ -117,6 +117,7 @@ target_compile_definitions(usermod_graphics4d INTERFACE
     USE_4D_FONT4
 )
 
+target_compile_options(usermod_graphics4d INTERFACE -Wno-error)
 # Verknüpfe mit dem generischen usermod-Target (MicroPython-Link)
 target_link_libraries(usermod INTERFACE usermod_graphics4d)
 target_link_libraries(usermod_graphics4d INTERFACE pico_stdio_usb)

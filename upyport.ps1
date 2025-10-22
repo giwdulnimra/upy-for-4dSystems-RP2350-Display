@@ -1,9 +1,8 @@
 # ---------------- CONFIG -----------------
 $RemoteUser     = "armin"
 $RemoteHost     = 
-    #"10.19.28.19"
-    "code.protronic.local"
-    #"can-mon"
+    "10.19.28.19"
+    #"code.protronic.local"
 $LocalBaseDir = #"."
     "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
 $TargetBoard = "4DSYS_RP2350_70"

@@ -50,7 +50,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_textarea_make_new_obj, 6, 6, mp_te
 
 // deinit / close method
 static mp_obj_t mp_textarea_deinit(mp_obj_t self_in) {
-    mp_obj_textarea_t *self = MP_OBJ_TO_PTR(self_in);
+    mp_obj_textarea_t *self = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(self_in));
     if (self->ta) {
         //delete self->ta;
         self->ta = nullptr;
@@ -61,7 +61,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mp_textarea_deinit_obj, mp_textarea_deinit);
 
 // Define locals(methods)-table for the TextArea4D Python object
 static const mp_rom_map_elem_t mp_textarea_locals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_textarea_deinit) },
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_textarea_deinit_obj) },
 };
 static MP_DEFINE_CONST_DICT(mp_textarea_locals, mp_textarea_locals_table);
 
@@ -298,7 +298,7 @@ static mp_obj_t mp_graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *ar
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_obj, 6, 7, mp_graphics4d_rectangle_filled);
 
 // Method: RectangleFAlpha(x1, y1, x2, y2, color, alpha, draw_fb=True)
-static mp_obj_t mp_graphics4d_rectangle_filled_with_alpha(size_t n_args, const mp_obj_t *args) {
+static mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -509,48 +509,75 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_triangle_filled_obj, 7,
 
 // List ->> Array converter
 static void mp_obj_to_int_array(mp_obj_t list_obj, int *out_array) {
+    mp_obj_t *items;
     size_t len = mp_obj_get_array_length(list_obj);
     mp_obj_t *items;
     mp_obj_get_array(list_obj, &len, &items);
     for (size_t i = 0; i < len; i++) {
         out_array[i] = mp_obj_get_int(items[i]);
     }
+    return ///
 }
 // Methon: Polyline([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-static mp_obj_t mp_graphics4d_polyline(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+//static mp_obj_t mp_graphics4d_polyline(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+static mp_obj_t mp_graphics4d_polyline(mp_obj_t self_in, mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
-    mp_obj_to_int_array(vx_obj, vx);
-    mp_obj_to_int_array(vy_obj, vy);
+    int vx[256], vy[256];
+    size_t len_x, len_y;
+    mp_obj_get_array(vx_obj, &len_x, &items);
+    mp_obj_get_array(vy_obj, &len_y, &items);
+    if (len_x != len_y) {
+        mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
+    }
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
     bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->Polyline(vx, vy, len, color, draw_fb);
+    self->gfx->Polyline(vx, vy, len_x, color, draw_fb);
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_4(mp_graphics4d_polyline_obj, mp_graphics4d_polyline);
+static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polyline_obj, mp_graphics4d_polyline);
 
 // Method: Polygon([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-static mp_obj_t mp_graphics4d_polygon(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+static mp_obj_t mp_graphics4d_polygon(mp_obj_t self_in, mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
-    mp_obj_to_int_array(vx_obj, vx);
-    mp_obj_to_int_array(vy_obj, vy);
+    int vx[256], vy[256];
+    size_t len_x, len_y;
+    mp_obj_get_array(vx_obj, &len_x, &items);
+    mp_obj_get_array(vy_obj, &len_y, &items);
+    if (len_x != len_y) {
+        mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
+    }
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
     bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->Polygon(vx, vy, len, color, draw_fb);
+    self->gfx->Polygon(vx, vy, len_x, color, draw_fb);
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_4(mp_graphics4d_polygon_obj, mp_graphics4d_polygon);
+static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polygon_obj, mp_graphics4d_polygon);
 
 // Method: PolygonF([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-static mp_obj_t mp_graphics4d_polygon_filled(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+static mp_obj_t mp_graphics4d_polygon_filled(mp_obj_t self_in, mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
-    mp_obj_to_int_array(vx_obj, vx);
-    mp_obj_to_int_array(vy_obj, vy);
+    int vx[256], vy[256];
+    size_t len_x, len_y;
+    mp_obj_get_array(vx_obj, &len_x, &items);
+    mp_obj_get_array(vy_obj, &len_y, &items);
+    if (len_x != len_y) {
+        mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
+    }
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
     bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->PolygonFilled(vx, vy, len, color, draw_fb);
+    self->gfx->PolygonFilled(vx, vy, len_x, color, draw_fb);
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_4(mp_graphics4d_polygon_filled_obj, mp_graphics4d_polygon_filled);
+static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polygon_filled_obj, mp_graphics4d_polygon_filled);
 
 // ~ __write_command
 // ~ __write_data
@@ -558,7 +585,8 @@ static MP_DEFINE_CONST_FUN_OBJ_4(mp_graphics4d_polygon_filled_obj, mp_graphics4d
 // ~ __get_aux_buffer x2
 
 // Method: setFont(font: int)
-static mp_obj_t mp_graphics4d_set_font(mp_obj_t font_id_obj) {
+static mp_obj_t mp_graphics4d_set_font(mp_obj_t self_in, mp_obj_t font_id_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int font_id = mp_obj_get_int(font_id_obj);
     const uint8_t *font_ptr = NULL;
@@ -569,41 +597,45 @@ static mp_obj_t mp_graphics4d_set_font(mp_obj_t font_id_obj) {
         case 4: font_ptr = Font4; break;
         default: break;
     }
-    const uint8_t *last_font = gfx->SetFont(font_ptr);
+    const uint8_t *last_font = self->gfx->SetFont(font_ptr);
     return mp_obj_new_int_from_uint((uintptr_t)last_font);
 }
-static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_set_font_obj, mp_graphics4d_set_font);
+static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_set_font_obj, mp_graphics4d_set_font);
 
 // Method: setFontForeground(color)
-static mp_obj_t mp_graphics4d_set_font_fg(mp_obj_t color_obj) {
+static mp_obj_t mp_graphics4d_set_font_fg(mp_obj_t self_in, mp_obj_t color_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     uint16_t color = mp_obj_get_int(color_obj);
-    uint16_t old_color = gfx->SetFontForeground(color);
+    uint16_t old_color = self->gfx->SetFontForeground(color);
     return mp_obj_new_int(old_color);
 }
-static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_set_font_fg_obj, mp_graphics4d_set_font_fg);
+static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_set_font_fg_obj, mp_graphics4d_set_font_fg);
 
 // Method: setFontBackground(color)
-static mp_obj_t mp_graphics4d_set_font_bg(mp_obj_t color_obj) {
+static mp_obj_t mp_graphics4d_set_font_bg(mp_obj_t self_in, mp_obj_t color_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     uint16_t color = mp_obj_get_int(color_obj);
-    uint16_t old_color = gfx->SetFontBackground(color);
+    uint16_t old_color = self->gfx->SetFontBackground(color);
     return mp_obj_new_int(old_color);
 }
+static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_set_font_bg_obj, mp_graphics4d_set_font_bg);
 
 // Method: getStringWidth(string: str)
-static mp_obj_t mp_graphics4d_get_string_width(mp_obj_t text_obj) {
+static mp_obj_t mp_graphics4d_get_string_width(mp_obj_t self_in, mp_obj_t text_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     const char *ts = mp_obj_str_get_str(text_obj);
-    uint width = gfx->GetStringWidth(ts);
+    uint width = self->gfx->GetStringWidth(ts);
     return mp_obj_new_int(width);
 }
-static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_get_string_width_obj, mp_graphics4d_get_string_width);
+static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_get_string_width_obj, mp_graphics4d_get_string_width);
 
 // Method: getFontHeight
 static mp_obj_t mp_graphics4d_get_font_height(mp_obj_t self_in) {
-    GFX_CHECK(self);
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
+    GFX_CHECK(self);
     uint height = self->gfx->GetFontHeight();
     return mp_obj_new_int(height);
 }
@@ -614,52 +646,54 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_get_font_height_obj, mp_graphics4
 
 // Method: print(text, draw_fb=True) || print(textarea, text, draw_fb_True)
 static mp_obj_t mp_graphics4d_print(size_t n_args, const mp_obj_t *args) {
-    //mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     // Case: print(str, draw_fb)
-    if (n_args == 1 || (n_args == 2 && mp_obj_is_str(args[0]))) {
+    if (n_args == 2 || (n_args == 3 && mp_obj_is_str(args[1]))) {
         const char *str = mp_obj_str_get_str(args[0]);
-        bool draw_fb = (n_args == 2) ? mp_obj_is_true(args[1]) : true;
-        size_t printed = gfx->print(str, draw_fb);
+        bool draw_fb = (n_args == 3) ? mp_obj_is_true(args[2]) : true;
+        size_t printed = self->gfx->print(str, draw_fb);
         return mp_obj_new_int(printed);
     }
     // Case: print(text_area, str, draw_fb)
-    if (n_args >= 2 && mp_obj_is_type(args[0], &graphics4d_TextArea_type)) {
-        mp_obj_textarea_t *ta = MP_OBJ_TO_PTR(args[0]);
-        const char *str = mp_obj_str_get_str(args[1]);
-        bool draw_fb = (n_args == 3) ? mp_obj_is_true(args[2]) : true;
-        size_t printed = gfx->print(ta->area, str, draw_fb);
+    if (n_args >= 3 && mp_obj_is_type(args[1], &graphics4d_TextArea_type)) {
+        mp_obj_textarea_t *ta = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[1]));
+        const char *str = mp_obj_str_get_str(args[2]);
+        bool draw_fb = (n_args == 3) ? mp_obj_is_true(args[3]) : true;
+        size_t printed = self->gfx->print(ta->ta, str, draw_fb);
         return mp_obj_new_int(printed);
     }
     
 }
-static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_print_obj, 1, 3, mp_graphics4d_print);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_print_obj, 2, 4, mp_graphics4d_print);
 
 // Method: printf(text, *args, draw_fb=True) || printf(textarea, text, *args, draw_fb_True)
 static mp_obj_t mp_graphics4d_printf(size_t n_args, const mp_obj_t *args) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     // Case: printf(str, *args)
-    if (n_args >= 2 && mp_obj_is_str(args[0])) {
+    if (n_args >= 2 && mp_obj_is_str(args[1])) {
         mp_obj_t formatted = mp_obj_str_format(n_args, args);
         const char *str = mp_obj_str_get_str(formatted);
-        size_t printed = gfx->print(str);
+        size_t printed = self->gfx->print(str);
         return mp_obj_new_int(printed);
     }
     // Case: printf(text_area, str, *args)
-    if (n_args >= 3 && mp_obj_is_type(args[0], &graphics4d_TextArea_type)) {
-        mp_obj_textarea_t *ta = MP_OBJ_TO_PTR(args[0]);
+    if (n_args >= 3 && mp_obj_is_type(args[1], &graphics4d_TextArea_type)) {
+        mp_obj_textarea_t *ta = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[0]));
         mp_obj_t formatted = mp_obj_str_format(n_args - 1, &args[1]);
         const char *str = mp_obj_str_get_str(formatted);
-        size_t printed = gfx->print(ta->area, str);
+        size_t printed = self->gfx->print(ta->ta, str);
         return mp_obj_new_int(printed);
     }
 }
-static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_printf_obj, 2, 4, mp_graphics4d_printf);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_printf_obj, 2, mp_graphics4d_printf);
 
 // Method: CreateTextArea(x1, y1, x2, y2, fg_color, bg_color)
-static mp_obj_t mp_graphics4d_create_text_area(mp_obj_t x1_obj, mp_obj_t y1_obj,
+static mp_obj_t mp_graphics4d_create_text_area(mp_obj_t self_in, mp_obj_t x1_obj, mp_obj_t y1_obj,
                                             mp_obj_t x2_obj, mp_obj_t y2_obj,
                                             mp_obj_t fg_obj, mp_obj_t bg_obj) {
+    mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(x1_obj);
     int y1 = mp_obj_get_int(y1_obj);
@@ -667,13 +701,13 @@ static mp_obj_t mp_graphics4d_create_text_area(mp_obj_t x1_obj, mp_obj_t y1_obj,
     int y2 = mp_obj_get_int(y2_obj);
     uint16_t fg = mp_obj_get_int(fg_obj);
     uint16_t bg = mp_obj_get_int(bg_obj);
-    TextArea4D area = gfx->CreateTextArea(x1, y1, x2, y2, fg, bg);
+    TextArea4D area = self->gfx->CreateTextArea(x1, y1, x2, y2, fg, bg);
     mp_obj_textarea_t *obj = m_new_obj(mp_obj_textarea_t);
-    obj->base.type = &text_area_type;
-    obj->ta = ta;
+    obj->base.type = &graphics4d_TextArea_type;
+    obj->ta = area;
     return MP_OBJ_FROM_PTR(obj);
 }
-static MP_DEFINE_CONST_FUN_OBJ_6(mp_graphics4d_create_text_area_obj, mp_graphics4d_create_text_area);
+static MP_DEFINE_CONST_FUN_OBJ_7(mp_graphics4d_create_text_area_obj, mp_graphics4d_create_text_area);
 
 //###
 /* Class: ImageControl - 2358 (?)
@@ -835,57 +869,57 @@ static MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_touched_obj, mp_graphics4d_touche
 
 // Define locals(methods)-table for the Graphics4D Python object
 static const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new) },
-    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_graphics4d_deinit) },
-    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_graphics4d_close) },
-    { MP_ROM_QSTR(MP_QSTR_DrawWidget), MP_ROM_PTR(&mp_graphics4d_draw_widget)},
-    { MP_ROM_QSTR(MP_QSTR_BlendColor), MP_ROM_PTR(&mp_graphics4d_blend_color)},
-    { MP_ROM_QSTR(MP_QSTR_getWidth), MP_ROM_PTR(&mp_graphics4d_get_width)},
-    { MP_ROM_QSTR(MP_QSTR_getHeight), MP_ROM_PTR(&mp_graphics4d_get_height)},
-    { MP_ROM_QSTR(MP_QSTR_setBacklightLevel), MP_ROM_PTR(&mp_graphics4d_set_backlight_level)},
-    { MP_ROM_QSTR(MP_QSTR_setContrast), MP_ROM_PTR(&mp_graphics4d_contrast)},
-    { MP_ROM_QSTR(MP_QSTR_Screenmode), MP_ROM_PTR(&mp_graphics4d_screenmode)},
-    { MP_ROM_QSTR(MP_QSTR_setBackgroundColor), MP_ROM_PTR(&mp_graphics4d_set_background_color)},
-    { MP_ROM_QSTR(MP_QSTR_setClipWindow), MP_ROM_PTR(&mp_graphics4d_clip_window)},
-    { MP_ROM_QSTR(MP_QSTR_MoveTo), MP_ROM_PTR(&mp_graphics4d_move_to)},
-    { MP_ROM_QSTR(MP_QSTR_MoveRel), MP_ROM_PTR(&mp_graphics4d_move_rel)},
-    { MP_ROM_QSTR(MP_QSTR_ClearScreen), MP_ROM_PTR(&mp_graphics4d_clear_screen)},
-    { MP_ROM_QSTR(MP_QSTR_Rectangle), MP_ROM_PTR(&mp_graphics4d_rectangle)},
-    { MP_ROM_QSTR(MP_QSTR_RectangleF), MP_ROM_PTR(&mp_graphics4d_rectangle_filled)},
-    { MP_ROM_QSTR(MP_QSTR_RectangleFAlpha), MP_ROM_PTR(&mp_graphics4d_rectangle_filled_alpha)},
-    { MP_ROM_QSTR(MP_QSTR_Circle), MP_ROM_PTR(&mp_graphics4d_circle)},
-    { MP_ROM_QSTR(MP_QSTR_CircleF), MP_ROM_PTR(&mp_graphics4d_circle_filled)},
-    { MP_ROM_QSTR(MP_QSTR_Ellipse), MP_ROM_PTR(&mp_graphics4d_ellipse)},
-    { MP_ROM_QSTR(MP_QSTR_EllipseF), MP_ROM_PTR(&mp_graphics4d_ellipse_filled)},
-    { MP_ROM_QSTR(MP_QSTR_Line), MP_ROM_PTR(&mp_graphics4d_line)},
-    { MP_ROM_QSTR(MP_QSTR_HLine), MP_ROM_PTR(&mp_graphics4d_hline)},
-    { MP_ROM_QSTR(MP_QSTR_VLine), MP_ROM_PTR(&mp_graphics4d_vline)},
-    { MP_ROM_QSTR(MP_QSTR_Pixel), MP_ROM_PTR(&mp_graphics4d_put_pixel)},
-    { MP_ROM_QSTR(MP_QSTR_Triangle), MP_ROM_PTR(&mp_graphics4d_triangle)},
-    { MP_ROM_QSTR(MP_QSTR_TriangleF), MP_ROM_PTR(&mp_graphics4d_triangle_filled)},
-    { MP_ROM_QSTR(MP_QSTR_Polyline), MP_ROM_PTR(&mp_graphics4d_polyline)},
-    { MP_ROM_QSTR(MP_QSTR_Polygon), MP_ROM_PTR(&mp_graphics4d_polygon)},
-    { MP_ROM_QSTR(MP_QSTR_PolygonF), MP_ROM_PTR(&mp_graphics4d_polygon_filled)},
-    { MP_ROM_QSTR(MP_QSTR_setFont), MP_ROM_PTR(&mp_graphics4d_set_font)},
-    { MP_ROM_QSTR(MP_QSTR_setFontForeground), MP_ROM_PTR(&mp_graphics4d_set_font_fg)},
-    { MP_ROM_QSTR(MP_QSTR_setFontBackground), MP_ROM_PTR(&mp_graphics4d_set_font_bg)},
-    { MP_ROM_QSTR(MP_QSTR_getStringWidth), MP_ROM_PTR(&mp_graphics4d_get_string_width)},
-    { MP_ROM_QSTR(MP_QSTR_getFontHeight), MP_ROM_PTR(&mp_graphics4d_get_font_height)},
-    { MP_ROM_QSTR(MP_QSTR_print), MP_ROM_PTR(&mp_graphics4d_print)},
-    { MP_ROM_QSTR(MP_QSTR_printf), MP_ROM_PTR(&mp_graphics4d_printf)},
-    { MP_ROM_QSTR(MP_QSTR_createTextArea), MP_ROM_PTR(&mp_graphics4d_create_text_area)},
-    { MP_ROM_QSTR(MP_QSTR_LoadImageControl), MP_ROM_PTR(&mp_graphics4d_load_image_control)},
-    { MP_ROM_QSTR(MP_QSTR_getCount), MP_ROM_PTR(&mp_graphics4d_get_count)},
-    { MP_ROM_QSTR(MP_QSTR_getInfo), MP_ROM_PTR(&mp_graphics4d_get_info)},
-    { MP_ROM_QSTR(MP_QSTR_setProperties), MP_ROM_PTR(&mp_graphics4d_set_properties)},
-    { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&mp_graphics4d_set_value)},
-    { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&mp_graphics4d_get_value)},
-    { MP_ROM_QSTR(MP_QSTR_getFrames), MP_ROM_PTR(&mp_graphics4d_get_frames)},
-    { MP_ROM_QSTR(MP_QSTR_setPosition), MP_ROM_PTR(&mp_graphics4d_set_position)},
-    { MP_ROM_QSTR(MP_QSTR_ClearControl), MP_ROM_PTR(&mp_graphics4d_clear_control)},
-    { MP_ROM_QSTR(MP_QSTR_ShowControl), MP_ROM_PTR(&mp_graphics4d_show_control)},
-    { MP_ROM_QSTR(MP_QSTR_ShowForm), MP_ROM_PTR(&mp_graphics4d_show_form)},
-    { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_graphics4d_touched)},
+    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new_obj) },
+    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_graphics4d_deinit_obj) },
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_graphics4d_close_obj) },
+    { MP_ROM_QSTR(MP_QSTR_DrawWidget), MP_ROM_PTR(&mp_graphics4d_draw_widget_obj)},
+    { MP_ROM_QSTR(MP_QSTR_BlendColor), MP_ROM_PTR(&mp_graphics4d_blend_color_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getWidth), MP_ROM_PTR(&mp_graphics4d_get_width_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getHeight), MP_ROM_PTR(&mp_graphics4d_get_height_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setBacklightLevel), MP_ROM_PTR(&mp_graphics4d_set_backlight_level_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setContrast), MP_ROM_PTR(&mp_graphics4d_contrast_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Screenmode), MP_ROM_PTR(&mp_graphics4d_screenmode_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setBackgroundColor), MP_ROM_PTR(&mp_graphics4d_set_background_color_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setClipWindow), MP_ROM_PTR(&mp_graphics4d_clip_window_obj)},
+    { MP_ROM_QSTR(MP_QSTR_MoveTo), MP_ROM_PTR(&mp_graphics4d_move_to_obj)},
+    { MP_ROM_QSTR(MP_QSTR_MoveRel), MP_ROM_PTR(&mp_graphics4d_move_rel_obj)},
+    { MP_ROM_QSTR(MP_QSTR_ClearScreen), MP_ROM_PTR(&mp_graphics4d_clear_screen_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Rectangle), MP_ROM_PTR(&mp_graphics4d_rectangle_obj_obj)},
+    { MP_ROM_QSTR(MP_QSTR_RectangleF), MP_ROM_PTR(&mp_graphics4d_rectangle_filled_obj)},
+    { MP_ROM_QSTR(MP_QSTR_RectangleFAlpha), MP_ROM_PTR(&mp_graphics4d_rectangle_filled_alpha_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Circle), MP_ROM_PTR(&mp_graphics4d_circle_obj)},
+    { MP_ROM_QSTR(MP_QSTR_CircleF), MP_ROM_PTR(&mp_graphics4d_circle_filled_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Ellipse), MP_ROM_PTR(&mp_graphics4d_ellipse_obj)},
+    { MP_ROM_QSTR(MP_QSTR_EllipseF), MP_ROM_PTR(&mp_graphics4d_ellipse_filled_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Line), MP_ROM_PTR(&mp_graphics4d_line_obj)},
+    { MP_ROM_QSTR(MP_QSTR_HLine), MP_ROM_PTR(&mp_graphics4d_hline_obj)},
+    { MP_ROM_QSTR(MP_QSTR_VLine), MP_ROM_PTR(&mp_graphics4d_vline_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Pixel), MP_ROM_PTR(&mp_graphics4d_put_pixel_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Triangle), MP_ROM_PTR(&mp_graphics4d_triangle_obj)},
+    { MP_ROM_QSTR(MP_QSTR_TriangleF), MP_ROM_PTR(&mp_graphics4d_triangle_filled_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Polyline), MP_ROM_PTR(&mp_graphics4d_polyline_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Polygon), MP_ROM_PTR(&mp_graphics4d_polygon_obj)},
+    { MP_ROM_QSTR(MP_QSTR_PolygonF), MP_ROM_PTR(&mp_graphics4d_polygon_filled_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setFont), MP_ROM_PTR(&mp_graphics4d_set_font_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setFontForeground), MP_ROM_PTR(&mp_graphics4d_set_font_fg_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setFontBackground), MP_ROM_PTR(&mp_graphics4d_set_font_bg_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getStringWidth), MP_ROM_PTR(&mp_graphics4d_get_string_width_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getFontHeight), MP_ROM_PTR(&mp_graphics4d_get_font_height_obj)},
+    { MP_ROM_QSTR(MP_QSTR_print), MP_ROM_PTR(&mp_graphics4d_print_obj)},
+    { MP_ROM_QSTR(MP_QSTR_printf), MP_ROM_PTR(&mp_graphics4d_printf_obj)},
+    { MP_ROM_QSTR(MP_QSTR_createTextArea), MP_ROM_PTR(&mp_graphics4d_create_text_area_obj)},
+    { MP_ROM_QSTR(MP_QSTR_LoadImageControl), MP_ROM_PTR(&mp_graphics4d_load_image_control_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getCount), MP_ROM_PTR(&mp_graphics4d_get_count_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getInfo), MP_ROM_PTR(&mp_graphics4d_get_info_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setProperties), MP_ROM_PTR(&mp_graphics4d_set_properties_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&mp_graphics4d_set_value_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&mp_graphics4d_get_value_obj)},
+    { MP_ROM_QSTR(MP_QSTR_getFrames), MP_ROM_PTR(&mp_graphics4d_get_frames_obj)},
+    { MP_ROM_QSTR(MP_QSTR_setPosition), MP_ROM_PTR(&mp_graphics4d_set_position_obj)},
+    { MP_ROM_QSTR(MP_QSTR_ClearControl), MP_ROM_PTR(&mp_graphics4d_clear_control_obj)},
+    { MP_ROM_QSTR(MP_QSTR_ShowControl), MP_ROM_PTR(&mp_graphics4d_show_control_obj)},
+    { MP_ROM_QSTR(MP_QSTR_ShowForm), MP_ROM_PTR(&mp_graphics4d_show_form_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_graphics4d_touched_obj)},
 };
 static MP_DEFINE_CONST_DICT(mp_graphics4d_locals_dict, mp_graphics4d_locals_dict_table);
 
@@ -1061,17 +1095,17 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_area_obj, 1, 2, mp_tou
 
 // Define locals(methods)-table for the Touch Python object
 static const mp_rom_map_elem_t mp_touch_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_Touch4D), MP_ROM_PTR(&mp_touch4d_make_new) },
-    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_touch4d_deinit) },
-    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_touch4d_close) },
-    { MP_ROM_QSTR(MP_QSTR_Calibrate), MP_ROM_PTR(&mp_touch4d_calibrate) },
-    { MP_ROM_QSTR(MP_QSTR_getPoints), MP_ROM_PTR(&mp_touch4d_get_points) },
-    { MP_ROM_QSTR(MP_QSTR_getStatus), MP_ROM_PTR(&mp_touch4d_get_status) },
-    { MP_ROM_QSTR(MP_QSTR_getID), MP_ROM_PTR(&mp_touch4d_get_id) },
-    { MP_ROM_QSTR(MP_QSTR_getX), MP_ROM_PTR(&mp_touch4d_get_x) },
-    { MP_ROM_QSTR(MP_QSTR_getY), MP_ROM_PTR(&mp_touch4d_get_y) },
-    { MP_ROM_QSTR(MP_QSTR_getWeight), MP_ROM_PTR(&mp_touch4d_get_weight) },
-    { MP_ROM_QSTR(MP_QSTR_getArea), MP_ROM_PTR(&mp_touch4d_get_area) },
+    { MP_ROM_QSTR(MP_QSTR_Touch4D), MP_ROM_PTR(&mp_touch4d_make_new_obj) },
+    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_touch4d_deinit_obj) },
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_touch4d_close_obj) },
+    { MP_ROM_QSTR(MP_QSTR_Calibrate), MP_ROM_PTR(&mp_touch4d_calibrate_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getPoints), MP_ROM_PTR(&mp_touch4d_get_points_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getStatus), MP_ROM_PTR(&mp_touch4d_get_status_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getID), MP_ROM_PTR(&mp_touch4d_get_id_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getX), MP_ROM_PTR(&mp_touch4d_get_x_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getY), MP_ROM_PTR(&mp_touch4d_get_y_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getWeight), MP_ROM_PTR(&mp_touch4d_get_weight_obj) },
+    { MP_ROM_QSTR(MP_QSTR_getArea), MP_ROM_PTR(&mp_touch4d_get_area_obj) },
 };
 static MP_DEFINE_CONST_DICT(mp_touch_locals_dict, mp_touch_locals_dict_table);
 

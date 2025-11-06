@@ -57,6 +57,7 @@ target_include_directories(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SDIO
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src
     ${CMAKE_CURRENT_BINARY_DIR}/src
+    ${MICROPY_DIR}
 )
 
 # generate_graphics

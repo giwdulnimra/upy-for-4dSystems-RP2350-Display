@@ -56,8 +56,8 @@ ssh $RemoteUser@$RemoteHost "bash ~/build_upy.sh"
 
 # --------- COPY BUILD FROM HOST ----------
 #scp -r "${RemoteUser}@${RemoteHost}/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}" $LocalBaseDir
-mkdir -p "$LocalBaseDir/$BuildDirectory/frozen_mpy"
-mkdir -p "$LocalBaseDir/$BuildDirectory/genhdr"
+#mkdir -p "$LocalBaseDir/$BuildDirectory/frozen_mpy"
+#mkdir -p "$LocalBaseDir/$BuildDirectory/genhdr"
 scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.uf2" "${LocalBaseDir}/${BuildDirectory}/"
 scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.bin" "${LocalBaseDir}/${BuildDirectory}/"
 scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.hex" "${LocalBaseDir}/${BuildDirectory}/"

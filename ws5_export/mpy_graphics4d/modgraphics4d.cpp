@@ -1,17 +1,18 @@
+#include "Graphics4D.h"
+#include <new> // For std::nothrow
 extern "C" {
 #include "py/obj.h"
 #include "py/runtime.h"
 #include "py/builtin.h"
 #include "py/mphal.h"
+#include "py/mpprint.h"
 }
-/*#include "GeneratedConsts.h"*/
-#include "Graphics4D.h"
-#include <new> // For std::nothrow
 
 // Forward declarations for type objects
 extern const mp_obj_type_t graphics4d_Graphics4D_type;
 extern const mp_obj_type_t graphics4d_Touch_type;
 extern const mp_obj_type_t graphics4d_TextArea_type;
+extern const mp_obj_type_t graphics4d_ImageControl_type;
 
 extern const uint8_t Font1[];
 extern const uint8_t Font2[];
@@ -69,8 +70,44 @@ static MP_DEFINE_CONST_DICT(mp_textarea_locals, mp_textarea_locals_table);
 const mp_obj_type_t graphics4d_TextArea_type = {
     { &mp_type_type },
     .name = MP_QSTR_TextArea,
-    .make_new = NULL, // Konstruktion nur über Factory
+    //.make_new = NULL, // Konstruktion nur über Factory
     .locals_dict = (mp_obj_dict_t*)&mp_textarea_locals,
+};
+
+
+/*
+IMAGECONTROL
+*/
+typedef struct _mp_obj_imagecontrol_t {
+    mp_obj_base_t base;
+    ImageControl4D hndl; // Zeiger auf die C++ ImageControl-Instanz
+} mp_obj_imagecontrol_t;
+
+// deinit / close method für ImageControl
+static mp_obj_t mp_imagecontrol_deinit(mp_obj_t self_in) {
+    mp_obj_imagecontrol_t *self = static_cast<mp_obj_imagecontrol_t*>(MP_OBJ_TO_PTR(self_in));
+    if (self->hndl) {
+        // HINWEIS: Du musst ~ImageControl() in Graphics4D.h public machen!
+        delete self->hndl;
+        self->hndl = nullptr;
+    }
+    return mp_const_none;
+}
+static MP_DEFINE_CONST_FUN_OBJ_1(mp_imagecontrol_deinit_obj, mp_imagecontrol_deinit);
+
+// HIER KOMMEN DIE METHODEN (getCount, getInfo, etc.)
+static const mp_rom_map_elem_t mp_imagecontrol_locals_table[] = {
+    { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_imagecontrol_deinit_obj) },
+    // Platzhalter - wir fügen die Methoden in Aktion 3 hinzu
+};
+static MP_DEFINE_CONST_DICT(mp_imagecontrol_locals, mp_imagecontrol_locals_table);
+
+// Define the Python type object for ImageControl
+const mp_obj_type_t graphics4d_ImageControl_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_ImageControl,
+    // .make_new ist NULL, da es über die Factory erstellt wird
+    .locals_dict = (mp_obj_dict_t*)&mp_imagecontrol_locals,
 };
 
 
@@ -100,7 +137,7 @@ static mp_obj_t mp_graphics4d_make_new(const mp_obj_type_t *type,
     bool ok = self->gfx->Initialize();
     if (!ok) {
         // cleanup and raise exception
-        delete self->gfx;
+        //delete self->gfx;
         self->gfx = NULL;
         mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Failed to initialize Graphics4D"));
     }
@@ -111,6 +148,7 @@ static MP_DEFINE_CONST_FUN_OBJ_KW(mp_graphics4d_make_new_obj, 0, mp_graphics4d_m
 // Destructor / deinit method
 static mp_obj_t mp_graphics4d_deinit(mp_obj_t self_in) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
+    //mp_obj_graphics4d_t *self = static_cast<mp_obj_graphics4d_t *>(MP_OBJ_TO_PTR(self_in));???
     if (self->gfx) {
         //delete self->gfx;
         self->gfx = NULL;
@@ -128,6 +166,19 @@ static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_close_obj, mp_graphics4d_close);
 #define GFX_CHECK(self)     if (!self || !(self)->gfx) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Graphics4D not initialized or closed properly"));}
 
 // Method: DrawWidget(num, f, x, y, gci_array)
+/*static mp_obj_t mp_graphics4d_draw_widget(mp_obj_t self_in, mp_obj_t num_obj, mp_obj_t f_obj, 
+                                        mp_obj_t x_obj, mp_obj_t y_obj, mp_obj_t gci_obj) {
+    GFX_CHECK(self);
+???
+    int num = mp_obj_get_int(num_obj);
+    int f = mp_obj_get_int(f_obj);
+    int x = mp_obj_get_int(x_obj);
+    int y = mp_obj_get_int(y_obj);
+    //Extract the buffer at gci_obj
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(gci_obj, &bufinfo, MP_BUFFER_READ);
+
+*/
 static const mp_obj_t mp_graphics4d_draw_widget(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
@@ -147,7 +198,8 @@ static const mp_obj_t mp_graphics4d_draw_widget(size_t n_args, const mp_obj_t *a
     self->gfx->DrawWidget(num, f, x, y, (const uint8_t *)bufinfo.buf);    
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_6(mp_graphics4d_draw_widget_obj, mp_graphics4d_draw_widget);
+//static MP_DEFINE_CONST_FUN_OBJ_6(mp_graphics4d_draw_widget_obj, mp_graphics4d_draw_widget);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_draw_widget_obj, 6, 6, mp_graphics4d_draw_widget);
 
 // ~ SetFrameBuffer
 // ~ Initialize
@@ -234,15 +286,15 @@ static mp_obj_t mp_graphics4d_clip_window(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     if (n_args == 1) {
-        self->gfx->ClipWindow(); // Reset clipping
-        return mo_const_bool(false);
+        self->gfx->ClipWindow(0, 0, self->gfx->GetWidth() - 1, self->gfx->GetHeight() - 1);; // Reset clipping
+        return mp_const_false;
     } else if (n_args == 5) {
         int x1 = mp_obj_get_int(args[1]);
         int y1 = mp_obj_get_int(args[2]);
         int x2 = mp_obj_get_int(args[3]);
         int y2 = mp_obj_get_int(args[4]);
         self->gfx->ClipWindow(x1, y1, x2, y2);
-        return mo_const_bool(true);
+        return mp_const_true;
     } else {
         mp_raise_TypeError(MP_ERROR_TEXT("ClipWindow() or ClipWindow(x1, y1, x2, y2)"));
         return mp_const_none;
@@ -297,7 +349,7 @@ static mp_obj_t mp_graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *ar
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_obj, 6, 7, mp_graphics4d_rectangle_filled);
 
-// Method: RectangleFAlpha(x1, y1, x2, y2, color, alpha, draw_fb=True)
+// Method: RectangleFAlpha(x1, y1, x2, y2, buffer, draw_fb=True)
 static mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
@@ -305,13 +357,13 @@ static mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj
     int y1 = mp_obj_get_int(args[2]);
     int x2 = mp_obj_get_int(args[3]);
     int y2 = mp_obj_get_int(args[4]);
-    uint16_t color = (uint16_t)mp_obj_get_int(args[5]);
-    uint8_t alpha = (uint8_t)mp_obj_get_int(args[6]);
-    bool draw_fb = (n_args > 7) ? mp_obj_is_true(args[7]) : true;
-    self->gfx->RectangleFilledWithAlpha(x1, y1, x2, y2, color, alpha, draw_fb);
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(args[5], &bufinfo, MP_BUFFER_READ);
+    bool draw_fb = (n_args > 6) ? mp_obj_is_true(args[6]) : true;
+    self->gfx->RectangleFilledWithAlpha(x1, y1, x2, y2, (const uint8_t *)bufinfo.buf, draw_fb);
     return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_with_alpha_obj, 7, 8, mp_graphics4d_rectangle_filled_with_alpha);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_with_alpha_obj, 6, 7, mp_graphics4d_rectangle_filled_with_alpha);
 
 // Method: HLine(x1, x2, y, color, draw_fb=True)
 static mp_obj_t mp_graphics4d_hline(size_t n_args, const mp_obj_t *args) {
@@ -508,15 +560,15 @@ static mp_obj_t mp_graphics4d_triangle_filled(size_t n_args, const mp_obj_t *arg
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_triangle_filled_obj, 7, 8, mp_graphics4d_triangle_filled);
 
 // List ->> Array converter
-static void mp_obj_to_int_array(mp_obj_t list_obj, int *out_array) {
+static void mp_obj_to_int_array(mp_obj_t list_obj, int *out_array, size_t *out_len) {
     mp_obj_t *items;
-    size_t len = mp_obj_get_array_length(list_obj);
-    mp_obj_t *items;
-    mp_obj_get_array(list_obj, &len, &items);
-    for (size_t i = 0; i < len; i++) {
+    mp_obj_get_array(list_obj, out_len, &items);
+    if (*out_len > 256) {
+         mp_raise_ValueError(MP_ERROR_TEXT("Polygon list too long (max 256)"));
+    }
+    for (size_t i = 0; i < *out_len; i++) {
         out_array[i] = mp_obj_get_int(items[i]);
     }
-    return ///
 }
 // Methon: Polyline([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
 //static mp_obj_t mp_graphics4d_polyline(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
@@ -525,16 +577,16 @@ static mp_obj_t mp_graphics4d_polyline(mp_obj_t self_in, mp_obj_t vx_obj, mp_obj
     GFX_CHECK(self);
     int vx[256], vy[256];
     size_t len_x, len_y;
-    mp_obj_get_array(vx_obj, &len_x, &items);
-    mp_obj_get_array(vy_obj, &len_y, &items);
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     if (len_x != len_y) {
         mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
     }
-    mp_obj_to_int_array(vx_obj, vx, &len_x);
-    mp_obj_to_int_array(vy_obj, vy, &len_y);
-    uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
-    bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->Polyline(vx, vy, len_x, color, draw_fb);
+    else () {
+        uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
+        bool draw_fb = mp_obj_is_true(draw_fb_obj);
+        self->gfx->Polyline(len_x, vx, vy, color, draw_fb);
+    }
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polyline_obj, mp_graphics4d_polyline);
@@ -545,16 +597,16 @@ static mp_obj_t mp_graphics4d_polygon(mp_obj_t self_in, mp_obj_t vx_obj, mp_obj_
     GFX_CHECK(self);
     int vx[256], vy[256];
     size_t len_x, len_y;
-    mp_obj_get_array(vx_obj, &len_x, &items);
-    mp_obj_get_array(vy_obj, &len_y, &items);
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     if (len_x != len_y) {
         mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
     }
-    mp_obj_to_int_array(vx_obj, vx, &len_x);
-    mp_obj_to_int_array(vy_obj, vy, &len_y);
-    uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
-    bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->Polygon(vx, vy, len_x, color, draw_fb);
+    else () {
+        uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
+        bool draw_fb = mp_obj_is_true(draw_fb_obj);
+        self->gfx->Polygon(len_x, vx, vy, color, draw_fb);
+    }
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polygon_obj, mp_graphics4d_polygon);
@@ -565,16 +617,16 @@ static mp_obj_t mp_graphics4d_polygon_filled(mp_obj_t self_in, mp_obj_t vx_obj, 
     GFX_CHECK(self);
     int vx[256], vy[256];
     size_t len_x, len_y;
-    mp_obj_get_array(vx_obj, &len_x, &items);
-    mp_obj_get_array(vy_obj, &len_y, &items);
+    mp_obj_to_int_array(vx_obj, vx, &len_x);
+    mp_obj_to_int_array(vy_obj, vy, &len_y);
     if (len_x != len_y) {
         mp_raise_ValueError(MP_ERROR_TEXT("x and y lists must be same length"));
     }
-    mp_obj_to_int_array(vx_obj, vx, &len_x);
-    mp_obj_to_int_array(vy_obj, vy, &len_y);
-    uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
-    bool draw_fb = mp_obj_is_true(draw_fb_obj);
-    self->gfx->PolygonFilled(vx, vy, len_x, color, draw_fb);
+    else () {
+        uint16_t color = (uint16_t)mp_obj_get_int(color_obj);
+        bool draw_fb = mp_obj_is_true(draw_fb_obj);
+        self->gfx->PolygonFilled(len_x, vx, vy, color, draw_fb);
+    }
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_5(mp_graphics4d_polygon_filled_obj, mp_graphics4d_polygon_filled);
@@ -650,18 +702,18 @@ static mp_obj_t mp_graphics4d_print(size_t n_args, const mp_obj_t *args) {
     GFX_CHECK(self);
     // Case: print(str, draw_fb)
     if (n_args == 2 || (n_args == 3 && mp_obj_is_str(args[1]))) {
-        const char *str = mp_obj_str_get_str(args[0]);
+        const char *str = mp_obj_str_get_str(args[1]);
         bool draw_fb = (n_args == 3) ? mp_obj_is_true(args[2]) : true;
         size_t printed = self->gfx->print(str, draw_fb);
-        return mp_obj_new_int(printed);
+        return mp_obj_new_bool(printed);
     }
     // Case: print(text_area, str, draw_fb)
     if (n_args >= 3 && mp_obj_is_type(args[1], &graphics4d_TextArea_type)) {
         mp_obj_textarea_t *ta = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[1]));
         const char *str = mp_obj_str_get_str(args[2]);
-        bool draw_fb = (n_args == 3) ? mp_obj_is_true(args[3]) : true;
+        bool draw_fb = (n_args == 4) ? mp_obj_is_true(args[3]) : true;
         size_t printed = self->gfx->print(ta->ta, str, draw_fb);
-        return mp_obj_new_int(printed);
+        return mp_obj_new_bool(printed);
     }
     
 }
@@ -671,23 +723,36 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_print_obj, 2, 4, mp_gra
 static mp_obj_t mp_graphics4d_printf(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
-    // Case: printf(str, *args)
+    // Initialize dynamic String-Buffer (vstr)
+    vstr_t vstr;
+    mp_print_t print;
+    vstr_init(&vstr, 64);
+    // ALT: mp_print_strn_init(&print, vstr_str(&vstr), 0, vstr_size(&vstr));
+    mp_print_strn_init(&print, vstr.buf, 0, vstr.len);
+    // Case: printf(str_format, *args)
     if (n_args >= 2 && mp_obj_is_str(args[1])) {
-        mp_obj_t formatted = mp_obj_str_format(n_args, args);
-        const char *str = mp_obj_str_get_str(formatted);
+        mp_obj_t format_str = args[1];
+        mp_obj_sprintf(&print, format_str, n_args - 2, &args[2]);
+        const char *str = vstr_null_terminated_str(&vstr);
         size_t printed = self->gfx->print(str);
+        vstr_clear(&vstr); // Puffer freigeben
         return mp_obj_new_int(printed);
     }
-    // Case: printf(text_area, str, *args)
+    // Case: printf(text_area, str_format, *args)
     if (n_args >= 3 && mp_obj_is_type(args[1], &graphics4d_TextArea_type)) {
-        mp_obj_textarea_t *ta = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[0]));
-        mp_obj_t formatted = mp_obj_str_format(n_args - 1, &args[1]);
-        const char *str = mp_obj_str_get_str(formatted);
-        size_t printed = self->gfx->print(ta->ta, str);
+        mp_obj_textarea_t *ta = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[1]));
+        mp_obj_t format_str = args[2];
+        mp_obj_sprintf(&print, format_str, n_args - 3, &args[3]);
+        const char *str = vstr_null_terminated_str(&vstr);
+        size_t printed = self->gfx->print(ta->ta, str); // Rufe print() auf
+        vstr_clear(&vstr); // Puffer freigeben
         return mp_obj_new_int(printed);
     }
+    vstr_clear(&vstr);
+    mp_raise_TypeError(MP_ERROR_TEXT("printf(format, *args) or printf(textarea, format, *args)"));
+    return mp_const_none;
 }
-static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_printf_obj, 2, mp_graphics4d_printf);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(mp_graphics4d_printf_obj, 2, mp_graphics4d_printf);
 
 // Method: CreateTextArea(x1, y1, x2, y2, fg_color, bg_color)
 static mp_obj_t mp_graphics4d_create_text_area(mp_obj_t self_in, mp_obj_t x1_obj, mp_obj_t y1_obj,
@@ -729,13 +794,13 @@ static const mp_obj_t mp_graphics4d_load_image_control(size_t n_args, const mp_o
         const char *filename = mp_obj_str_get_str(args[1]);
         int x = mp_obj_get_int(args[2]);
         int y = mp_obj_get_int(args[3]);
-        int index = self->gfx->img.LoadImageControl(filename, x, y);
+        int index = img.LoadImageControl(filename, x, y);
         return mp_obj_new_int(index);
     } else if (n_args == 2) {
         // Overload 2: LoadImageControl(gci_array)
         mp_buffer_info_t bufinfo;
         mp_get_buffer_raise(args[1], &bufinfo, MP_BUFFER_READ);
-        int index = self->gfx->img.LoadImageControl((const uint8_t *)bufinfo.buf);
+        int index = img.LoadImageControl((const uint8_t *)bufinfo.buf);
         return mp_obj_new_int(index);
     } else {
         mp_raise_TypeError(MP_ERROR_TEXT("load_image_control(filename, x, y) or load_image_control(gci_array)"));
@@ -748,7 +813,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_load_image_control_obj,
 static mp_obj_t mp_graphics4d_get_count(mp_obj_t self_in) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
-    int count = self->gfx->img.GetCount();
+    int count = img.GetCount();
     return mp_obj_new_int(count);
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(mp_graphics4d_get_count_obj, mp_graphics4d_get_count);
@@ -758,7 +823,7 @@ static mp_obj_t mp_graphics4d_get_info(mp_obj_t self_in, mp_obj_t index_obj) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
-    int info = self->gfx->img.GetInfo(index);
+    int info = img.GetInfo(index);
     return mp_obj_new_int(info);
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_get_info_obj, mp_graphics4d_get_info);
@@ -770,7 +835,7 @@ static mp_obj_t mp_graphics4d_set_properties(mp_obj_t self_in, mp_obj_t index_ob
     int index = mp_obj_get_int(index_obj);
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(properties_buf_obj, &bufinfo, MP_BUFFER_READ);
-    self->gfx->img.SetProperties(index, (const uint8_t *)bufinfo.buf);
+    img.SetProperties(index, (const uint8_t *)bufinfo.buf);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_set_properties_obj, mp_graphics4d_set_properties);
@@ -781,7 +846,7 @@ static mp_obj_t mp_graphics4d_set_value(mp_obj_t self_in, mp_obj_t index_obj, mp
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
     int value = mp_obj_get_int(value_obj);
-    self->gfx->img.SetValue(index, value);
+    img.SetValue(index, value);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_set_value_obj, mp_graphics4d_set_value);
@@ -791,7 +856,7 @@ static mp_obj_t mp_graphics4d_get_value(mp_obj_t self_in, mp_obj_t index_obj) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
-    int value = self->gfx->img.GetValue(index);
+    int value = img.GetValue(index);
     return mp_obj_new_int(value);
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_get_value_obj, mp_graphics4d_get_value);
@@ -801,7 +866,7 @@ static mp_obj_t mp_graphics4d_get_frames(mp_obj_t self_in, mp_obj_t index_obj) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
-    int frames = self->gfx->img.GetFrames(index);
+    int frames = img.GetFrames(index);
     return mp_obj_new_int(frames);
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_get_frames_obj, mp_graphics4d_get_frames);
@@ -813,7 +878,7 @@ static mp_obj_t mp_graphics4d_set_position(mp_obj_t self_in, mp_obj_t index_obj,
     int index = mp_obj_get_int(index_obj);
     int x = mp_obj_get_int(x_obj);
     int y = mp_obj_get_int(y_obj);
-    self->gfx->img.SetPosition(index, x, y);
+    img.SetPosition(index, x, y);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_4(mp_graphics4d_set_position_obj, mp_graphics4d_set_position);
@@ -823,7 +888,7 @@ static mp_obj_t mp_graphics4d_clear_control(mp_obj_t self_in, mp_obj_t index_obj
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
-    self->gfx->img.Clear(index);
+    img.Clear(index);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_clear_control_obj, mp_graphics4d_clear_control);
@@ -833,7 +898,7 @@ static mp_obj_t mp_graphics4d_show_control(mp_obj_t self_in, mp_obj_t index_obj)
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int index = mp_obj_get_int(index_obj);
-    self->gfx->img.Show(index);
+    img.Show(index);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_show_control_obj, mp_graphics4d_show_control);
@@ -843,7 +908,7 @@ static mp_obj_t mp_graphics4d_show_form(mp_obj_t self_in, mp_obj_t form_id_obj) 
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(self_in);
     GFX_CHECK(self);
     int form_id = mp_obj_get_int(form_id_obj);
-    self->gfx->img.ShowForm(form_id);
+    img.ShowForm(form_id);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_2(mp_graphics4d_show_form_obj, mp_graphics4d_show_form);
@@ -854,7 +919,7 @@ static mp_obj_t mp_graphics4d_touched(mp_obj_t self_in, mp_obj_t x_obj, mp_obj_t
     GFX_CHECK(self);
     int x = mp_obj_get_int(x_obj);
     int y = mp_obj_get_int(y_obj);
-    bool touched = self->gfx->img.Touched(x, y);
+    bool touched = img.Touched(x, y);
     return (touched ? mp_const_true : mp_const_false);
 }
 static MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_touched_obj, mp_graphics4d_touched);
@@ -869,7 +934,7 @@ static MP_DEFINE_CONST_FUN_OBJ_3(mp_graphics4d_touched_obj, mp_graphics4d_touche
 
 // Define locals(methods)-table for the Graphics4D Python object
 static const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new_obj) },
+    //{ MP_ROM_QSTR(MP_QSTR_init), MP_ROM_PTR(&mp_graphics4d_make_new_obj) },
     { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_graphics4d_deinit_obj) },
     { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_graphics4d_close_obj) },
     { MP_ROM_QSTR(MP_QSTR_DrawWidget), MP_ROM_PTR(&mp_graphics4d_draw_widget_obj)},
@@ -884,7 +949,7 @@ static const mp_rom_map_elem_t mp_graphics4d_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_MoveTo), MP_ROM_PTR(&mp_graphics4d_move_to_obj)},
     { MP_ROM_QSTR(MP_QSTR_MoveRel), MP_ROM_PTR(&mp_graphics4d_move_rel_obj)},
     { MP_ROM_QSTR(MP_QSTR_ClearScreen), MP_ROM_PTR(&mp_graphics4d_clear_screen_obj)},
-    { MP_ROM_QSTR(MP_QSTR_Rectangle), MP_ROM_PTR(&mp_graphics4d_rectangle_obj_obj)},
+    { MP_ROM_QSTR(MP_QSTR_Rectangle), MP_ROM_PTR(&mp_graphics4d_rectangle_obj)},
     { MP_ROM_QSTR(MP_QSTR_RectangleF), MP_ROM_PTR(&mp_graphics4d_rectangle_filled_obj)},
     { MP_ROM_QSTR(MP_QSTR_RectangleFAlpha), MP_ROM_PTR(&mp_graphics4d_rectangle_filled_alpha_obj)},
     { MP_ROM_QSTR(MP_QSTR_Circle), MP_ROM_PTR(&mp_graphics4d_circle_obj)},
@@ -927,7 +992,7 @@ static MP_DEFINE_CONST_DICT(mp_graphics4d_locals_dict, mp_graphics4d_locals_dict
 const mp_obj_type_t mp_graphics4d_Graphics4D_type = {
     { &mp_type_type },
     .name = MP_QSTR_Graphics4D,
-    .make_new = mp_graphics4d_make_new,
+    //.make_new = mp_graphics4d_make_new,
     .locals_dict = (mp_obj_dict_t*)&mp_graphics4d_locals_dict,
 };
 
@@ -1095,7 +1160,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_area_obj, 1, 2, mp_tou
 
 // Define locals(methods)-table for the Touch Python object
 static const mp_rom_map_elem_t mp_touch_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_Touch4D), MP_ROM_PTR(&mp_touch4d_make_new_obj) },
+    //{ MP_ROM_QSTR(MP_QSTR_Touch4D), MP_ROM_PTR(&mp_touch4d_make_new_obj) },
     { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_touch4d_deinit_obj) },
     { MP_ROM_QSTR(MP_QSTR_close), MP_ROM_PTR(&mp_touch4d_close_obj) },
     { MP_ROM_QSTR(MP_QSTR_Calibrate), MP_ROM_PTR(&mp_touch4d_calibrate_obj) },
@@ -1113,6 +1178,6 @@ static MP_DEFINE_CONST_DICT(mp_touch_locals_dict, mp_touch_locals_dict_table);
 const mp_obj_type_t graphics4d_Touch_type = {
     { &mp_type_type },
     .name = MP_QSTR_Touch,
-    .make_new = mp_touch4d_make_new,
+    //.make_new = mp_touch4d_make_new,
     .locals_dict = (mp_obj_dict_t*)&mp_touch_locals_dict,
 };

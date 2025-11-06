@@ -22,7 +22,7 @@ if __name__ == "__main__":
     #start_directory = r"C:\Users\armin\OneDrive\6FS-MT-Jena_BA\Praxismodul\projekt_blinky_c"
     #start_directory =  r"C:\Users\armin\OneDrive\6FS-MT-Jena_BA\Bachelorarbeit\upy_display_export"#"\ws5_export"
     #start_directory = "/home/lenimra/Documents/bachelorarbeit/upy_display_export/ws5_export"
-    start_directory = r"C:\Users\armin\Desktop\Light Theme_XD-Material OneStoebich-Kopie"
+    start_directory = r"C:\Users\armin\OneDrive\6FS-MT-Jena_BA\Bachelorarbeit\upy_display_export\micropython\py"
     
     #output_txt = r"projekt_blinky_c_structure.txt"
     #output_txt = r"C:\Users\armin\OneDrive\6FS-MT-Jena_BA\Bachelorarbeit\upy_display_export\upy_display_export.txt"#"\ws5_structure.txt"

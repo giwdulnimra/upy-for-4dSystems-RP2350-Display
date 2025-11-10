@@ -23,4 +23,4 @@ while true; do
             ;;
     esac
 done
-make -j4
+make -j4 CMAKE_ARGS="-DMICROPY_VFS_FAT=0"

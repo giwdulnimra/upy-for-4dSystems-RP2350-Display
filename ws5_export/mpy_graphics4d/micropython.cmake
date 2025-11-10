@@ -44,42 +44,49 @@ set(PICO_STDIO_USB 1)
 set(PICO_STDIO_UART 0)
     
 # Include-Pfade
-target_include_directories(usermod_graphics4d INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_CURRENT_LIST_DIR}/src
-    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools
-    ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf
-    ${CMAKE_CURRENT_LIST_DIR}/src/fonts
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/include
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SPI
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SDIO
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_base/include
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_util/include
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_stdlib_headers/include/pico
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/hardware_rtc/include
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/hardware_rtc/include/hardware
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/pico_aon_timer/include/pico
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/pico_platform/include/pico
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/pico_platform/include/pico/platform
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/hardware_regs/include/hardware
-    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/hardware_regs/include/hardware/regs
-    ${CMAKE_CURRENT_BINARY_DIR}/src
-    ${MICROPY_DIR}  
-    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_base/include
-    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_util/include
-    ${PICO_SDK_PATH}/src/common/pico_stdlib_headers/include
-    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_stdlib_headers/include/pico
-    ${PICO_SDK_PATH}/src/common/pico_stdio_headers/include
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/hardware_rtc/include
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/hardware_rtc/include/hardware
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/pico_aon_timer/include/pico
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/pico_platform/include/pico
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/pico_platform/include/pico/platform
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/hardware_regs/include/hardware
-    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/hardware_regs/include/hardware/regs
+target_include_directories(usermod_graphics4d
+    INTERFACE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/src
+        ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools
+        ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf
+        ${CMAKE_CURRENT_LIST_DIR}/src/fonts
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/include
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/include
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SPI
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SDIO
+        ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}/src
+        ${MICROPY_DIR}                                          #py/mperrno.h #py/mphal.h #py/runtime.h #extmod/modmachine.h
+        ${PICO_SDK_PATH}
+        #${PICO_SDK_PATH}/lib/tinyusb/src                        #tusb.h                    -> conflicts with micropythons tinyusb
+        #${PICO_SDK_PATH}/lib/tinyusb/lib/fatfs/source           #diskio.h #ff.h #ffconf.h  -> conflicts with micropythons tinyusb
+        ${PICO_SDK_PATH}/src/common/pico_base_headers/include   #pico.h #pico/assert.h #pico/config.h #pico/error.h #pico/types.h
+        ${PICO_SDK_PATH}/src/common/pico_binary_info/include    #pico/binary_info.h
+        ${PICO_SDK_PATH}/src/common/pico_stdlib_headers/include #pico/stdlib.h
+        ${PICO_SDK_PATH}/src/common/pico_sync/include           #pico/mutex.h
+        ${PICO_SDK_PATH}/src/common/pico_util/include           #pico/util/datetime.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_adc/include    #hardware/adc.h
+        ${PICO_SDK_PATH}/src/rp2_common/cmsis/stub/CMSIS/Device/RP2350/Include  #RP2350.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_base/include   #hardware/address_mapped.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_flash/include  #hardware/flash.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_gpio/include   #hardware/gpio.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_rtc/include    #hardware/rtc.h
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_rtc/include/hardware
+        ${PICO_SDK_PATH}/src/rp2_common/hardware_sync/include   #hardware/sync.h
+        ${PICO_SDK_PATH}/src/rp2_common/pico_aon_timer/include  #pico/aon_timer.h
+        ${PICO_SDK_PATH}/src/rp2_common/pico_aon_timer/include/pico
+        ${PICO_SDK_PATH}/src/rp2_common/pico_flash/include      #pico/flash.h
+        ${PICO_SDK_PATH}/src/rp2_common/pico_stdio/include      #pico/stdio.h
+        ${PICO_SDK_PATH}/src/rp2350/hardware_structs/include    #hardware/structs/dma_debug.h #hardware/structs/xip_ctrl.h #hardware/structs/clocks.h
+        ${PICO_SDK_PATH}/src/rp2350/hardware_regs/include       #hardware/regs/addressmap.h #hardware/structs/qmi.h
+        #??# hardware/clocks.h + hardware/spi.h + hardware/dma.h + hardware/pio.h
+        ${PICO_SDK_PATH}/src/rp2350/pico_platform/include       #pico/platform.h #pico/platform/cpu_regs.h
+        ${PICO_SDK_PATH}/src/rp2350/pico_platform/include/pico
+        ${PICO_SDK_PATH}/src/rp2350/pico_platform/include/pico/platform
 )      
 
 # generate_graphics
@@ -133,28 +140,39 @@ target_sources(usermod_graphics4d INTERFACE
     ${SDIO_PIO_HEADER}
 )
 
-target_compile_definitions(usermod_graphics4d INTERFACE
-    USE_4D_FONT1
-    USE_4D_FONT2
-    USE_4D_FONT3
-    USE_4D_FONT4
+target_compile_definitions(usermod_graphics4d
+    INTERFACE
+        USE_4D_FONT1
+        USE_4D_FONT2
+        USE_4D_FONT3
+        USE_4D_FONT4
+        PICO_INCLUDE_RTC_DATETIME=1
 )
 
-target_compile_options(usermod_graphics4d INTERFACE -Wno-error)
+target_compile_options(usermod_graphics4d INTERFACE
+    -Wno-error
+    -Wno-implicit-function-declaration
+)
+#target_compile_options(usermod INTERFACE -Wno-implicit-function-declaration)
+
 # Verknüpfe mit dem generischen usermod-Target (MicroPython-Link)
 target_link_libraries(usermod INTERFACE usermod_graphics4d)
 target_link_libraries(usermod_graphics4d INTERFACE 
+    #graphics_4d
+    hardware_adc
+    hardware_clocks
+    hardware_flash
+    hardware_i2c 
+    hardware_spi
+    hardware_pio 
+    hardware_pwm
+    #no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
+    pico_bootrom 
+    hardware_dma
+    pico_flash 
     pico_stdio_usb 
     pico_stdlib 
-    pico_util#
-    hardware_aon_timer#
-    hardware_rtc
-    hardware_pwm
-    hardware_pio 
-    hardware_flash 
-    pico_flash 
-    hardware_i2c 
-    hardware_clocks 
-    psram_tools 
-    pico_bootrom
+    pico_util
+    #psram_tools 
 )
+    

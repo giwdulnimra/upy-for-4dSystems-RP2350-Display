@@ -56,10 +56,31 @@ target_include_directories(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SPI
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/SDIO
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_base/include
     ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_util/include
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/common/pico_stdlib_headers/include/pico
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/hardware_rtc/include
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/hardware_rtc/include/hardware
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2_common/pico_aon_timer/include/pico
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/pico_platform/include/pico
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/pico_platform/include/pico/platform
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/hardware_regs/include/hardware
+    ${CMAKE_CURRENT_LIST_DIR}/pico-sdk_partial/src/rp2350/hardware_regs/include/hardware/regs
     ${CMAKE_CURRENT_BINARY_DIR}/src
-    ${MICROPY_DIR}
-)
+    ${MICROPY_DIR}  
+    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_base/include
+    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_util/include
+    ${PICO_SDK_PATH}/src/common/pico_stdlib_headers/include
+    ${PICO_SDK_PATH}/pico-sdk/src/common/pico_stdlib_headers/include/pico
+    ${PICO_SDK_PATH}/src/common/pico_stdio_headers/include
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/hardware_rtc/include
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/hardware_rtc/include/hardware
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2_common/pico_aon_timer/include/pico
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/pico_platform/include/pico
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/pico_platform/include/pico/platform
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/hardware_regs/include/hardware
+    ${PICO_SDK_PATH}/pico-sdk/src/rp2350/hardware_regs/include/hardware/regs
+)      
 
 # generate_graphics
 add_custom_command(
@@ -122,4 +143,18 @@ target_compile_definitions(usermod_graphics4d INTERFACE
 target_compile_options(usermod_graphics4d INTERFACE -Wno-error)
 # Verknüpfe mit dem generischen usermod-Target (MicroPython-Link)
 target_link_libraries(usermod INTERFACE usermod_graphics4d)
-target_link_libraries(usermod_graphics4d INTERFACE pico_stdio_usb)
+target_link_libraries(usermod_graphics4d INTERFACE 
+    pico_stdio_usb 
+    pico_stdlib 
+    pico_util#
+    hardware_aon_timer#
+    hardware_rtc
+    hardware_pwm
+    hardware_pio 
+    hardware_flash 
+    pico_flash 
+    hardware_i2c 
+    hardware_clocks 
+    psram_tools 
+    pico_bootrom
+)

@@ -26,6 +26,7 @@ while (-not $selected) {
             scp -r "$LocalBaseDir/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
             scp -r "$LocalBaseDir/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
             scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
+            scp "$LocalBaseDir/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
             $selected = $true
             break
         }
@@ -35,6 +36,7 @@ while (-not $selected) {
             scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.cmake"
             scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
             scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
+            scp "$LocalBaseDir/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
             $selected = $true
             break
         }

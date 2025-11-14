@@ -1,4 +1,6 @@
 # CMake fragment for MicroPython extmod component
+# custom version to support custom VFS_FAT implementation in usermodule
+# replace micropython/extmod/extmod.cmake
 
 set(MICROPY_EXTMOD_DIR "${MICROPY_DIR}/extmod")
 set(MICROPY_OOFATFS_DIR "${MICROPY_DIR}/lib/oofatfs")
@@ -56,11 +58,10 @@ set(MICROPY_SOURCE_EXTMOD
     ${MICROPY_EXTMOD_DIR}/os_dupterm.c
     ${MICROPY_EXTMOD_DIR}/vfs.c
     ${MICROPY_EXTMOD_DIR}/vfs_blockdev.c
-if (NOT(DEFINED CUSTOM_VFS_FAT AND CUSTOM_VFS_FAT)) # set 1 ind micropython.cmake if usermodule includes custom FAT implementation
-    ${MICROPY_EXTMOD_DIR}/vfs_fat.c
-    ${MICROPY_EXTMOD_DIR}/vfs_fat_diskio.c
-    ${MICROPY_EXTMOD_DIR}/vfs_fat_file.c
-endif()
+# Theese files are excluded to use custom FAT implementation, They are appended again conditionally below
+    #${MICROPY_EXTMOD_DIR}/vfs_fat.c
+    #${MICROPY_EXTMOD_DIR}/vfs_fat_diskio.c
+    #${MICROPY_EXTMOD_DIR}/vfs_fat_file.c
     ${MICROPY_EXTMOD_DIR}/vfs_lfs.c
     ${MICROPY_EXTMOD_DIR}/vfs_rom.c
     ${MICROPY_EXTMOD_DIR}/vfs_rom_file.c
@@ -70,6 +71,13 @@ endif()
     ${MICROPY_EXTMOD_DIR}/virtpin.c
     ${MICROPY_EXTMOD_DIR}/nimble/modbluetooth_nimble.c
 )
+if(NOT (DEFINED CUSTOM_VFS_FAT AND CUSTOM_VFS_FAT)) # set 1 if usermodule includes custom FAT implementation
+    list(APPEND MICROPY_SOURCE_EXTMOD
+        ${MICROPY_EXTMOD_DIR}/vfs_fat.c
+        ${MICROPY_EXTMOD_DIR}/vfs_fat_diskio.c
+        ${MICROPY_EXTMOD_DIR}/vfs_fat_file.c
+    )
+endif()
 
 # Single-precision libm math library.
 

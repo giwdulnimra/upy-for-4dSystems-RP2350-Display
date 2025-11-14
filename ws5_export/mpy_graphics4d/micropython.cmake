@@ -1,7 +1,6 @@
 # Create INERFACE-Library-Target
 add_library(usermod_graphics4d INTERFACE)
 set(GCX_SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/src/4d.gcx")
-set(CUSTOM_VFS_FAT 1 CACHE BOOL "User module provides its own VFS_FAT implementation")
 
 # Configure output directrory
 set(GFX_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src)
@@ -17,10 +16,14 @@ target_sources(usermod_graphics4d INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/src/psram_tools/tlsf/tlsf.c
     # --- FatFS / SD Card Source Files ---
     # FatFs Core
-    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src/glue.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ff.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ffsystem.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/ff15/source/ffunicode.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src/glue.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/src/crc.c
+    # MicroPython VFS_FAT Integration
+    ${MICROPY_DIR}/extmod/vfs_fat.c
+    ${MICROPY_DIR}/extmod/vfs_fat_file.c
     # SD Driver Core
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/dma_interrupts.c
     ${CMAKE_CURRENT_LIST_DIR}/src/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/src/sd_driver/sd_card.c
@@ -148,7 +151,6 @@ target_compile_definitions(usermod_graphics4d
         USE_4D_FONT3
         USE_4D_FONT4
         PICO_INCLUDE_RTC_DATETIME=1
-        CUSTOM_VFS_FAT=1
 )
 
 target_compile_options(usermod_graphics4d INTERFACE

@@ -15,8 +15,8 @@ $ClearBuild = #$false
 $ProjektName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
-Copy-Item $LocalBaseDir"/ws5_export/$ProjektName.gcx" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/4d.gcx"
-Copy-Item $LocalBaseDir"/ws5_export/GeneratedConsts.h" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/GeneratedConsts.h"
+Copy-Item $LocalBaseDir"/ws5_export/$ProjektName.gcx" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/4d.gcx" -Force
+Copy-Item $LocalBaseDir"/ws5_export/GeneratedConsts.h" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/GeneratedConsts.h" -Force
 $selected = $false
 while (-not $selected) {
     Write-Host "The Build Folder contains files that should not be changed between builds (sources). Copying these files can take some time but is necessary at least once. Type 'a' to copy the entire build folder, 'e' to copy just essential build files, or 'b' to just build without copying: "
@@ -25,14 +25,16 @@ while (-not $selected) {
         'a' {
             scp -r "$LocalBaseDir/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
             scp -r "$LocalBaseDir/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
+            scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
             $selected = $true
             break
         }
         'e' {
-            scp -r "$LocalBaseDir/ws5_export/mpy_graphics4d/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/4d.gcx"
-            scp -r "$LocalBaseDir/ws5_export/mpy_graphics4d/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/modgraphics4d.cpp"
-            scp -r "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.cmake"
-            scp -r "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/4d.gcx"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/modgraphics4d.cpp"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.cmake"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
+            scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
             $selected = $true
             break
         }
@@ -61,7 +63,7 @@ while true; do
     read run_clean
     case `$run_clean in
         [yY])
-            make -j4 V=1 clean
+            make -j4 V=1 clean BUILD=$BuildDirectory
             break
             ;;        
         [nN])

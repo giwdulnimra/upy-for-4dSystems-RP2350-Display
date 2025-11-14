@@ -1,6 +1,7 @@
 # Create INERFACE-Library-Target
 add_library(usermod_graphics4d INTERFACE)
 set(GCX_SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/src/4d.gcx")
+set(CUSTOM_VFS_FAT 1 CACHE BOOL "User module provides its own VFS_FAT implementation")
 
 # Configure output directrory
 set(GFX_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src)
@@ -147,7 +148,7 @@ target_compile_definitions(usermod_graphics4d
         USE_4D_FONT3
         USE_4D_FONT4
         PICO_INCLUDE_RTC_DATETIME=1
-        MICROPY_VFS_FAT=0
+        CUSTOM_VFS_FAT=1
 )
 
 target_compile_options(usermod_graphics4d INTERFACE

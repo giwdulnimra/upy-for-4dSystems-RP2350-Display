@@ -10,7 +10,7 @@ while true; do
     read run_clean
     case $run_clean in
         [yY])
-            make -j4 V=1 clean
+            make -j4 V=1 clean BUILD=build-4Dsys
             break
             ;;        
         [nN])

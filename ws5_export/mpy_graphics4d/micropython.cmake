@@ -147,6 +147,7 @@ target_compile_definitions(usermod_graphics4d
         USE_4D_FONT3
         USE_4D_FONT4
         PICO_INCLUDE_RTC_DATETIME=1
+        MICROPY_VFS_FAT=0
 )
 
 target_compile_options(usermod_graphics4d INTERFACE

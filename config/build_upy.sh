@@ -2,19 +2,17 @@
 cd ~/micropython
 #make -C mpy-cross
 cd ports/rp2
-export BOARD=4DSYS_RP2350_70
-export BUILD=build-4Dsys
-export USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d
 
-make -j4 submodules
+make -j4 V=1 submodules BOARD=4DSYS_RP2350_70 BUILD=build-4Dsys USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d/micropython.cmake
+
 while true; do
     echo "Run 'make clean'? [y/n]: "
     read run_clean
     case $run_clean in
         [yY])
-            make -j4 clean
+            make -j4 V=1 clean
             break
-            ;;
+            ;;        
         [nN])
             echo "Skipping 'make clean'"
             break
@@ -23,4 +21,5 @@ while true; do
             ;;
     esac
 done
-make -j4 CMAKE_ARGS="-DMICROPY_VFS_FAT=0"
+make -j4 BOARD=4DSYS_RP2350_70 BUILD=build-4Dsys USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d/micropython.cmake
+

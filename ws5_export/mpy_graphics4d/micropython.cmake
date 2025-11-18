@@ -46,7 +46,7 @@ target_sources(usermod_graphics4d INTERFACE
 
 set(PICO_STDIO_USB 1)
 set(PICO_STDIO_UART 0)
-    
+
 # Include-Pfade
 target_include_directories(usermod_graphics4d
     INTERFACE
@@ -73,8 +73,8 @@ target_include_directories(usermod_graphics4d
         ${PICO_SDK_PATH}/src/common/pico_stdlib_headers/include #pico/stdlib.h
         ${PICO_SDK_PATH}/src/common/pico_sync/include           #pico/mutex.h
         ${PICO_SDK_PATH}/src/common/pico_util/include           #pico/util/datetime.h
+        #${PICO_SDK_PATH}/src/rp2_common/cmsis/stub/CMSIS/Device/RP2350/Include  #RP2350.h
         ${PICO_SDK_PATH}/src/rp2_common/hardware_adc/include    #hardware/adc.h
-        ${PICO_SDK_PATH}/src/rp2_common/cmsis/stub/CMSIS/Device/RP2350/Include  #RP2350.h
         ${PICO_SDK_PATH}/src/rp2_common/hardware_base/include   #hardware/address_mapped.h
         ${PICO_SDK_PATH}/src/rp2_common/hardware_flash/include  #hardware/flash.h
         ${PICO_SDK_PATH}/src/rp2_common/hardware_gpio/include   #hardware/gpio.h
@@ -156,6 +156,7 @@ target_compile_definitions(usermod_graphics4d
 target_compile_options(usermod_graphics4d INTERFACE
     -Wno-error
     -Wno-implicit-function-declaration
+    -ftrivial-auto-var-init=zero
 )
 #target_compile_options(usermod INTERFACE -Wno-implicit-function-declaration)
 

@@ -245,13 +245,15 @@ void Graphics4D::SetFramebuffer(uint16_t *buffer)
 
 bool Graphics4D::Initialize()
 {
-    stdio_usb_init();
+    //stdio_usb_init(); // is called by Micropython
 #ifdef GEN4_RP2350_RGB
     // Force clock to 248MHz in RGB mode
 #if defined(GEN4_RP2350_70) || defined(GEN4_RP2350_70T) || defined(GEN4_RP2350_70CT) || defined(RP2350_90) || defined(RP2350_90T)  || defined(RP2350_90CT)
-    set_sys_clock_khz(258000, true);
+    //set_sys_clock_khz(258000, true);
+    ;
 #else
-    set_sys_clock_khz(258000, true);
+    //set_sys_clock_khz(258000, true);
+    ;
 #endif
 #endif
 
@@ -446,7 +448,7 @@ bool Graphics4D::Initialize()
     delay(200);
     Cls();
     Contrast(15);
-    stdio_usb_init();
+    //stdio_usb_init(); // is called by Micropython
 
     return true;
 }
@@ -3472,7 +3474,7 @@ void GraphicsMedia4D::__show_digits(ImageControl4D hndl, MediaInfo4D digits, boo
 {
     // prepare aux buffer
     size_t pixel_count = digits->width * digits->height;
-    uint16_t *dest;
+    uint16_t *dest = NULL;
 
     int x1 = digits->x;
     int y1 = digits->y;
@@ -3672,7 +3674,11 @@ void GraphicsMedia4D::__show_digits(ImageControl4D hndl, MediaInfo4D digits, boo
     }
 
 #ifdef GEN4_RP2350_RGB
-    return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    if (dest != NULL) {
+        return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    } else {
+        return;
+    }
 #else
     return gfx.SendFrameBuffer(x1, y1, x2, y2);
 #endif
@@ -5166,9 +5172,9 @@ int16_t GraphicsTouch4D::GetArea(uint8_t point)
 
 #endif
 
-// Define these instances
-Graphics4D &gfx = Graphics4D::GetInstance();
-GraphicsMedia4D &img = GraphicsMedia4D::GetInstance();
+/*// Define these instances
+//Graphics4D &gfx = Graphics4D::GetInstance();
+//GraphicsMedia4D &img = GraphicsMedia4D::GetInstance();
 #ifndef LCD_TOUCH_NONE
-GraphicsTouch4D &touch = GraphicsTouch4D::GetInstance();
-#endif
+//GraphicsTouch4D &touch = GraphicsTouch4D::GetInstance();
+#endif*/

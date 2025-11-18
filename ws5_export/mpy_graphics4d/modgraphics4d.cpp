@@ -764,12 +764,14 @@ static mp_obj_t mp_graphics4d_load_image_control(size_t n_args, const mp_obj_t *
     if (mp_obj_is_str(args[0])) {
         // Overload 1: LoadImageControl(filename, [formIndex])
         const char *filename = mp_obj_str_get_str(args[0]);
-        hndl = img.LoadImageControl(filename, formIndex); // C++ call
+        //hndl = img.LoadImageControl(filename, formIndex); // C++ call
+        hndl = GraphicsMedia4D::GetInstance().LoadImageControl(filename, formIndex); // C++ call
     } else {
         // Overload 2: LoadImageControl(buffer, [formIndex])
         mp_buffer_info_t bufinfo;
         mp_get_buffer_raise(args[0], &bufinfo, MP_BUFFER_READ);
-        hndl = img.LoadImageControl((const uint8_t *)bufinfo.buf, formIndex); // C++ call
+        //hndl = img.LoadImageControl((const uint8_t *)bufinfo.buf, formIndex); // C++ call
+        hndl = GraphicsMedia4D::GetInstance().LoadImageControl((const uint8_t *)bufinfo.buf, formIndex); // C++ call
     }
     if (!hndl) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Failed to load image control"));}
     mp_obj_imagecontrol_t *o = m_new_obj(mp_obj_imagecontrol_t);
@@ -783,7 +785,8 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_load_image_control_obj,
 static mp_obj_t mp_imagecontrol_get_count(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
-    int count = img.GetCount(self->hndl);
+    //int count = img.GetCount(self->hndl);
+    int count = GraphicsMedia4D::GetInstance().GetCount(self->hndl);
     return mp_obj_new_int(count);
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_get_count_obj, 1, 1, mp_imagecontrol_get_count);
@@ -793,7 +796,8 @@ static mp_obj_t mp_imagecontrol_get_info(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
-    MediaInfo4D info = img.GetInfo(self->hndl, index); 
+    //MediaInfo4D info = img.GetInfo(self->hndl, index); 
+    MediaInfo4D *info = GraphicsMedia4D::GetInstance().GetInfo(self->hndl, index);
     // HINWEIS: Das gibt einen Zeiger zurück, vielleicht in ein Tupel/Dict umwandeln?
     // Fürs Erste Zeiger als int
     return mp_obj_new_int_from_uint((uintptr_t)info);
@@ -806,7 +810,8 @@ static mp_obj_t mp_imagecontrol_set_value(size_t n_args, const mp_obj_t *args) {
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
     int value = mp_obj_get_int(args[2]);
-    img.SetValue(self->hndl, index, value);
+    //img.SetValue(self->hndl, index, value);
+    GraphicsMedia4D::GetInstance().SetValue(self->hndl, index, value);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_set_value_obj, 3, 3, mp_imagecontrol_set_value);
@@ -816,7 +821,8 @@ static mp_obj_t mp_imagecontrol_get_value(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
-    int value = img.GetValue(self->hndl, index);
+    //int value = img.GetValue(self->hndl, index);
+    int value = GraphicsMedia4D::GetInstance().GetValue(self->hndl, index);
     return mp_obj_new_int(value);
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_get_value_obj, 2, 2, mp_imagecontrol_get_value);
@@ -827,7 +833,8 @@ static mp_obj_t mp_imagecontrol_show(size_t n_args, const mp_obj_t *args) {
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
     bool draw_fb = (n_args > 2) ? mp_obj_is_true(args[2]) : true;
-    img.Show(self->hndl, index, draw_fb);
+    //img.Show(self->hndl, index, draw_fb);
+    GraphicsMedia4D::GetInstance().Show(self->hndl, index, draw_fb);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_show_obj, 2, 3, mp_imagecontrol_show);
@@ -837,7 +844,8 @@ static mp_obj_t mp_imagecontrol_show_form(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
-    img.ShowForm(self->hndl, index);
+    //img.ShowForm(self->hndl, index);
+    GraphicsMedia4D::GetInstance().ShowForm(self->hndl, index);
     return mp_const_none;
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_show_form_obj, 2, 2, mp_imagecontrol_show_form);
@@ -847,7 +855,8 @@ static mp_obj_t mp_imagecontrol_touched(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
-    uint result = img.Touched(self->hndl, index);
+    //uint result = img.Touched(self->hndl, index);
+    uint result = GraphicsMedia4D::GetInstance().Touched(self->hndl, index);
     return mp_obj_new_int(result);
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_touched_obj, 2, 2, mp_imagecontrol_touched);

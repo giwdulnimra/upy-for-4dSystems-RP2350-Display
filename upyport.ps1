@@ -1,8 +1,8 @@
 # ---------------- CONFIG -----------------
 $RemoteUser     = "armin"
 $RemoteHost     = 
-    "10.19.28.19"
-    #"code.protronic.local"
+    "10.19.28.130"
+    #"code"
 $LocalBaseDir = #"."
     "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
 $TargetBoard = "4DSYS_RP2350_70"
@@ -15,6 +15,7 @@ $ClearBuild = #$false
 $ProjektName = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
+Clear-Host
 Copy-Item $LocalBaseDir"/ws5_export/$ProjektName.gcx" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/4d.gcx" -Force
 Copy-Item $LocalBaseDir"/ws5_export/GeneratedConsts.h" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/GeneratedConsts.h" -Force
 $selected = $false

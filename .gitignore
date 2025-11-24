@@ -1,4 +1,4 @@
-shell_cs/*
+.vscode/*
 rp2/boards/4DSYS_RP2350_70/.idea/*
 ws5_export/mpy_graphics4d/src/.idea/*
 build*/*

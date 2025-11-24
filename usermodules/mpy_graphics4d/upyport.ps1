@@ -1,50 +1,50 @@
 # ---------------- CONFIG -----------------
 $RemoteUser     = "armin"
-$RemoteHost     = 
-    "10.19.28.130"
-    #"code"
-$LocalBaseDir = #"."
-    "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
-$TargetBoard = "4DSYS_RP2350_70"
-    #"RPI_PICO2_W"
+$RemoteHost     = "10.19.28.130"
+$LocalBaseDir   = "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
+$TargetBoard    = "4DSYS_RP2350_70"
+                  #"RPI_PICO2_W"
 $BuildDirectory = "build-4Dsys"
-    #"build-Pico2w"
-    #"build-CustomTest"
-$ClearBuild = #$false
-    $true
-$ProjektName = "SliderExample"
+$ClearBuild     = #$false
+                  $true
+$ProjektName    = "mpy_graphics4d"
+$Main           = "SliderExample"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
 Clear-Host
-Copy-Item $LocalBaseDir"/ws5_export/$ProjektName.gcx" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/4d.gcx" -Force
-Copy-Item $LocalBaseDir"/ws5_export/GeneratedConsts.h" $LocalBaseDir"/ws5_export/mpy_graphics4d/src/GeneratedConsts.h" -Force
+Copy-Item $LocalBaseDir"/usermods/$ProjektName/ws5_export/$Main.gcx" $LocalBaseDir"/usermods/$ProjektName/src/4d.gcx" -Force
+Copy-Item $LocalBaseDir"/usermods/$ProjektName/ws5_export/GeneratedConsts.h" $LocalBaseDir"/usermods/$ProjektName/src/GeneratedConsts.h" -Force
+#Copy-Item $LocalBaseDir"/usermods/$ProjektName/ws5_export/Graphics4D/src/Graphics4D.cpp" $LocalBaseDir"/usermods/$ProjektName/Graphics4D_OriginCopy.cpp" -Force
+#Copy-Item $LocalBaseDir"/usermods/$ProjektName/ws5_export/Graphics4D/src/Graphics4D.h" $LocalBaseDir"/usermods/$ProjektName/Graphics4D_OriginCopy.h" -Force
 $selected = $false
 while (-not $selected) {
     Write-Host "The Build Folder contains files that should not be changed between builds (sources). Copying these files can take some time but is necessary at least once. Type 'a' to copy the entire build folder, 'e' to copy just essential build files, or 'b' to just build without copying: "
     $build_choice = Read-Host
     switch ($build_choice.ToLower()) {
         'a' {
-            scp -r "$LocalBaseDir/ws5_export" "${RemoteUser}@${RemoteHost}:~/micropython/"
-            scp -r "$LocalBaseDir/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
-            scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
-            scp "$LocalBaseDir/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
+            scp -r "$LocalBaseDir/usermods/$ProjectName" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName"
+            scp -r "$LocalBaseDir/custom_ports/rp2/boards/$TargetBoard/" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/boards/"
+            scp "$LocalBaseDir/usermods/$ProjectName/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
+            scp "$LocalBaseDir/usermods/$ProjectName/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
             $selected = $true
             break
         }
         'e' {
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/4d.gcx"
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/modgraphics4d.cpp"
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.cmake"
-            #scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/Graphics4D.h" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/Graphics4D.h"
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/Graphics4D.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/Graphics4D.cpp"
-            scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
-            scp "$LocalBaseDir/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
+            scp "$LocalBaseDir/usermods/$ProjectName/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/*.c"
+            scp "$LocalBaseDir/usermods/$ProjectName/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/*.cpp"
+            #scp "$LocalBaseDir/usermods/$ProjectName/modgraphics4d.h" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/modgraphics4d.cpp"
+            scp "$LocalBaseDir/usermods/$ProjectName/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/micropython.cmake"
+            #scp "$LocalBaseDir/usermods/$ProjectName/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/micropython.mk"
+            scp "$LocalBaseDir/usermods/$ProjectName/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/src/4d.gcx"
+            scp "$LocalBaseDir/usermods/$ProjectName/src/Graphics4D.h" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/src/Graphics4D.h"
+            scp "$LocalBaseDir/usermods/$ProjectName/src/Graphics4D.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/src/Graphics4D.cpp"
+            scp "$LocalBaseDir/usermods/$ProjectName/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
+            scp "$LocalBaseDir/usermods/$ProjectName/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
             $selected = $true
             break
         }
         'b' {
-            scp -r "$LocalBaseDir/ws5_export/mpy_graphics4d/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/4d.gcx"
+            scp -r "$LocalBaseDir/usermods/$ProjectName/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/usermods/$ProjectName/src/4d.gcx"
             $selected = $true
             break
         }
@@ -61,7 +61,7 @@ cd ~/micropython
 #make -C mpy-cross
 cd ports/rp2
 
-make -j4 V=1 submodules BOARD=$TargetBoard BUILD=$BuildDirectory USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d/micropython.cmake
+make -j4 V=1 submodules BOARD=$TargetBoard BUILD=$BuildDirectory USER_C_MODULES=~/micropython/usermods/$ProjectName/micropython.cmake
 
 while true; do
     echo "Run 'make clean'? [y/n]: "
@@ -79,31 +79,31 @@ while true; do
             ;;
     esac
 done
-make -j4 BOARD=$TargetBoard BUILD=$BuildDirectory USER_C_MODULES=~/micropython/ws5_export/mpy_graphics4d/micropython.cmake
+make -j4 BOARD=$TargetBoard BUILD=$BuildDirectory USER_C_MODULES=~/micropython/usermods/$ProjectName/micropython.cmake
 
 
 "@
 
-Set-Content -Path "$LocalBaseDir/config/build_upy.sh" -Value ($shContent -replace "`r`n", "`n") -Encoding UTF8 -NoNewline
+Set-Content -Path "$LocalBaseDir/usermods/$ProjectName/config/build_upy.sh" -Value ($shContent -replace "`r`n", "`n") -Encoding UTF8 -NoNewline
 scp .\config\build_upy.sh "${RemoteUser}@${RemoteHost}:~/build_upy.sh"
 ssh $RemoteUser@$RemoteHost "bash ~/build_upy.sh"
 
 # --------- COPY BUILD FROM HOST ----------
-scp -r "${RemoteUser}@${RemoteHost}/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}" $LocalBaseDir
-#mkdir -p "$LocalBaseDir/$BuildDirectory/frozen_mpy"
-#mkdir -p "$LocalBaseDir/$BuildDirectory/genhdr"
+#scp -r "${RemoteUser}@${RemoteHost}/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}" "$LocalBaseDir/build/"
+
 New-Item -ItemType Directory -Path "$LocalBaseDir/$BuildDirectory/frozen_mpy" -Force
 New-Item -ItemType Directory -Path "$LocalBaseDir/$BuildDirectory/genhdr" -Force
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.uf2" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.bin" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.hex" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.dis" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.elf" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.elf.map" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.c" "${LocalBaseDir}/${BuildDirectory}/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/frozen_mpy/*.mpy" "${LocalBaseDir}/${BuildDirectory}/frozen_mpy/"
-scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/genhdr/*.h" "${LocalBaseDir}/${BuildDirectory}/genhdr/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.uf2" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.bin" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.hex" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.dis" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.elf" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.elf.map" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/*.c" "${LocalBaseDir}/build/${BuildDirectory}/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/frozen_mpy/*.mpy" "${LocalBaseDir}/build/${BuildDirectory}/frozen_mpy/"
+scp "${RemoteUser}@${RemoteHost}:/home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}/genhdr/*.h" "${LocalBaseDir}/build/${BuildDirectory}/genhdr/"
 if ($ClearBuild) {
-    Write-Host "removing remote build directory..."   
+    #Write-Host "removing remote build directory..."
+    Write-Host "removing remote build directory... <- ISN'T CONFIGURED TO WORK YET"
     #ssh $RemoteUser@$RemoteHost "rm -r /home/${RemoteUser}/micropython/ports/rp2/${BuildDirectory}"<$null
 }

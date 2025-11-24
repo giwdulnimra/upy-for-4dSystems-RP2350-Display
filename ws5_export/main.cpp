@@ -34,8 +34,8 @@ int main() {
         if (points > 0) {
             touched = img.Touched(hndl, -1);
 
-            if (touched == iSliderB0) {
-                newval = img.GetValue(hndl, iSliderB0);        
+            if (touched == iSliderA0) {
+                newval = img.GetValue(hndl, iSliderA0);        
 
                 if (newval != oldval) {
                     img.SetValue(hndl, iGaugeB0, newval); // Update GaugeB0 value

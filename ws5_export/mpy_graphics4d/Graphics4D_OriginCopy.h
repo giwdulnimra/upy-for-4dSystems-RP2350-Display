@@ -1,7 +1,6 @@
 #pragma once
 
-#include "pico/time.h"  // for MicroPython compatibility
-//#include "pico/stdlib.h"  // comment for MicroPython compatibility
+#include "pico/stdlib.h"
 #ifdef LCD_TOUCH_4WIRE
 #include "hardware/adc.h"
 #endif
@@ -10,7 +9,7 @@
 
 #include <hardware/clocks.h>
 #include "pico/stdio.h" // must also enable usb stdio in CMakeLists
-//#include "pico/stdio_usb.h"   // conflicts with micropythons tinyusb
+#include "pico/stdio_usb.h"
 
 #include "Colors4D.h"
 #include "pico_4d_modules.h"
@@ -38,8 +37,8 @@
 class TextArea
 {
 private:
-    //TextArea(int x1, int y1, int x2, int y2, uint16_t fg_color, uint16_t bg_color);
-    //~TextArea();
+    TextArea(int x1, int y1, int x2, int y2, uint16_t fg_color, uint16_t bg_color);
+    ~TextArea();
 
     bool wrap = true;
     bool scroll = false;
@@ -55,8 +54,6 @@ private:
     int cursor_y;
 
 public:
-    TextArea(int x1, int y1, int x2, int y2, uint16_t fg_color, uint16_t bg_color);// made public for upy-integration
-    ~TextArea();// made public for upy-integration
     friend class Graphics4D;
 };
 
@@ -288,9 +285,9 @@ typedef MediaInfo *MediaInfo4D;
 class ImageControl
 {
 private:
-    //ImageControl(const uint8_t *ptr);
-    //ImageControl(FIL *fil);
-    //~ImageControl();
+    ImageControl(const uint8_t *ptr);
+    ImageControl(FIL *fil);
+    ~ImageControl();
 
     uint count;             // Number of widgets found in file or array
     uint formCount;         // Number of forms found in file or array
@@ -303,9 +300,6 @@ private:
     MediaInfo4D * forms;    // pointer to an array containing the form MediaInfo4D pointers
     // TODO: Add more useful stuff here
 public:
-    ImageControl(const uint8_t *ptr);// made public for upy-integration
-    ImageControl(FIL *fil);// made public for upy-integration
-    ~ImageControl();// made public for upy-integration
     friend class GraphicsMedia4D;
 };
 
@@ -412,9 +406,6 @@ struct TouchInfo
 class GraphicsTouch4D
 {
 public:
-    GraphicsTouch4D();// made public for upy-integration
-    ~GraphicsTouch4D();// made public for upy-integration
-    
     bool Initialize();
 
 #if defined(LCD_TOUCH_4WIRE) || defined(LCD_TOUCH_NS2009)
@@ -430,8 +421,8 @@ public:
     int16_t GetArea(uint8_t point = 0);
 
 private:
-    //GraphicsTouch4D();
-    //~GraphicsTouch4D();
+    GraphicsTouch4D();
+    ~GraphicsTouch4D();
     GraphicsTouch4D(const GraphicsTouch4D &);
     GraphicsTouch4D &operator=(const GraphicsTouch4D &);
 

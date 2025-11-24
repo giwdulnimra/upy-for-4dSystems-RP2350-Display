@@ -5,9 +5,10 @@
 #define MICROPY_HW_FLASH_STORAGE_BYTES  (PICO_FLASH_SIZE_BYTES - (2 * 1024 * 1024))
 //#define MICROPY_HW_FLASH_STORAGE_BYTES  (PICO_FLASH_SIZE_BYTES - 1024 * 1024)
 
-// TODO: Split PSRAM option off as a variant
+// Enable PSRAM
+#define MICROPY_HW_ENABLE_PSRAM (1)
 #define MICROPY_HW_PSRAM_CS_PIN (0)
-#define MICROPY_HW_ENABLE_PSRAM (0)
+
 
 // Override machine_uart.c definitions.
 // See weactstudio_rp2350b.h and note that the PICO_DEFAULT_UART configuration

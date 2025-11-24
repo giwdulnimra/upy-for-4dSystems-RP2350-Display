@@ -1,4 +1,6 @@
 shell_cs/*
 rp2/boards/4DSYS_RP2350_70/.idea/*
-lxubuntu - Verknüpfung.lnk
+ws5_export/mpy_graphics4d/src/.idea/*
 build*/*
+*.lnk
+*.docx

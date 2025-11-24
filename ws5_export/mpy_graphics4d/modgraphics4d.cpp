@@ -6,6 +6,7 @@ extern "C" {
 #include "py/builtin.h"
 #include "py/mphal.h"
 #include "py/mpprint.h"
+//#include "py/misc.h"
 //}
 
 // Forward declarations for type objects
@@ -797,7 +798,7 @@ static mp_obj_t mp_imagecontrol_get_info(size_t n_args, const mp_obj_t *args) {
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
     //MediaInfo4D info = img.GetInfo(self->hndl, index); 
-    MediaInfo4D *info = GraphicsMedia4D::GetInstance().GetInfo(self->hndl, index);
+    MediaInfo4D info = GraphicsMedia4D::GetInstance().GetInfo(self->hndl, index);
     // HINWEIS: Das gibt einen Zeiger zurück, vielleicht in ein Tupel/Dict umwandeln?
     // Fürs Erste Zeiger als int
     return mp_obj_new_int_from_uint((uintptr_t)info);

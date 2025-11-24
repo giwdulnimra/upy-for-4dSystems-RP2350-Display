@@ -35,7 +35,9 @@ while (-not $selected) {
             scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/4d.gcx" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/4d.gcx"
             scp "$LocalBaseDir/ws5_export/mpy_graphics4d/modgraphics4d.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/modgraphics4d.cpp"
             scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.cmake"
-            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
+            #scp "$LocalBaseDir/ws5_export/mpy_graphics4d/micropython.mk" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/micropython.mk"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/Graphics4D.h" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/Graphics4D.h"
+            scp "$LocalBaseDir/ws5_export/mpy_graphics4d/src/Graphics4D.cpp" "${RemoteUser}@${RemoteHost}:~/micropython/ws5_export/mpy_graphics4d/src/Graphics4D.cpp"
             scp "$LocalBaseDir/config/extmod.cmake" "${RemoteUser}@${RemoteHost}:~/micropython/extmod/extmod.cmake"
             scp "$LocalBaseDir/config/CMakeLists.txt" "${RemoteUser}@${RemoteHost}:~/micropython/ports/rp2/CMakeLists.txt"
             $selected = $true

@@ -56,7 +56,7 @@ call to millis() returns 0xFFFFFFFF:
 #endif
 #if PICO_RP2350
 //#  include "RP2350.h"
-#   include "addressmap.h"
+#include "hardware/regs/addressmap.h"
 #endif
 
 #ifdef __cplusplus

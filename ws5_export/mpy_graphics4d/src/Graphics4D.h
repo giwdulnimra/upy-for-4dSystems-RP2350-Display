@@ -1,6 +1,7 @@
 #pragma once
 
-#include "pico/stdlib.h"
+#include "pico/time.h"  // for MicroPython compatibility
+//#include "pico/stdlib.h"  // comment for MicroPython compatibility
 #ifdef LCD_TOUCH_4WIRE
 #include "hardware/adc.h"
 #endif
@@ -9,7 +10,7 @@
 
 #include <hardware/clocks.h>
 #include "pico/stdio.h" // must also enable usb stdio in CMakeLists
-#include "pico/stdio_usb.h"
+//#include "pico/stdio_usb.h"   // conflicts with micropythons tinyusb
 
 #include "Colors4D.h"
 #include "pico_4d_modules.h"

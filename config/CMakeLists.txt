@@ -26,8 +26,8 @@ set(PICO_BTSTACK_PATH ${MICROPY_DIR}/lib/btstack)
 # Set the location of this port's directory.
 set(MICROPY_PORT_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-# Set Variable to exclude VFS_FAT from extmod
-set(CUSTOM_VFS_FAT 1 CACHE BOOL "User module provides its own VFS_FAT implementation")
+# Set 1 to exclude VFS_FAT from extmod
+set(CUSTOM_VFS_FAT 0 CACHE BOOL "User module provides its own VFS_FAT implementation")
 
 # Set the board if it's not already set.
 if(NOT MICROPY_BOARD)

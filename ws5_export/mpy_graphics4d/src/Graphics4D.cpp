@@ -209,9 +209,11 @@ Graphics4D::Graphics4D()
     __display.pixel_count = LCD_WIDTH * LCD_HEIGHT;
     __display.clip.x2 = LCD_WIDTH - 1;
     __display.clip.y2 = LCD_HEIGHT - 1;
-    __settings.buffer = (char *)malloc(__settings.buffer_size + 1);
-    __textarea = new TextArea(0, 0, __display.width, __display.height, 0x07E0, 0x0000);
-    SetFont(Font1);
+    //__settings.buffer = (char *)malloc(__settings.buffer_size + 1);
+    //__textarea = new TextArea(0, 0, __display.width, __display.height, 0x07E0, 0x0000);
+    __settings.buffer = nullptr; // for MicroPython-Implementation -> initializeid in Initialize()
+    __textarea = nullptr; // for MicroPython-Implementation -> initializeid in Initialize()
+    //SetFont(Font1);
 }
 
 Graphics4D::~Graphics4D()
@@ -245,6 +247,14 @@ void Graphics4D::SetFramebuffer(uint16_t *buffer)
 
 bool Graphics4D::Initialize()
 {
+    if (__settings.buffer == nullptr) { // for MicroPython-Implementation
+        __settings.buffer = (char *)malloc(__settings.buffer_size + 1);
+    }
+    
+    if (__textarea == nullptr) { // for MicroPython-Implementation
+        __textarea = new TextArea(0, 0, __display.width, __display.height, 0x07E0, 0x0000);
+    }
+    SetFont(Font1);
     //stdio_usb_init(); // is called by Micropython
 #ifdef GEN4_RP2350_RGB
     // Force clock to 248MHz in RGB mode
@@ -792,6 +802,11 @@ void Graphics4D::RectangleFilled(int x1, int y1, int x2, int y2, uint16_t color,
         x2_translated = y2;
         y2_translated = LCD_HEIGHT - 1 - x1;
         break;
+    default: // for Compiler warning with MicroPython
+        x1_translated = x1;
+        y1_translated = y1;
+        x2_translated = x2;
+        y2_translated = y2;
     }
 
     uint w = x2_translated - x1_translated + 1;
@@ -914,6 +929,9 @@ void Graphics4D::RectangleFilled(int x1, int y1, int x2, int y2, const uint16_t 
                 x_translated = y;
                 y_translated = LCD_HEIGHT - 1 - x;
                 break;
+            default: // for Compiler warning with MicroPython
+                x_translated = x;
+                y_translated = y;
             }
 
             uint pos = y_translated * LCD_WIDTH + x_translated;
@@ -1026,6 +1044,9 @@ void Graphics4D::RectangleFilled(int x1, int y1, int x2, int y2, const uint8_t *
                 x_translated = y;
                 y_translated = LCD_HEIGHT - 1 - x;
                 break;
+            default: // for Compiler warning with MicroPython
+                x_translated = x;
+                y_translated = y;
             }
 
             uint pos = y_translated * LCD_WIDTH + x_translated;
@@ -1126,6 +1147,9 @@ void Graphics4D::RectangleFilledWithAlpha(int x1, int y1, int x2, int y2, const 
                         x_translated = y;
                         y_translated = LCD_HEIGHT - 1 - x;
                         break;
+                    default: // for Compiler warning with MicroPython
+                        x_translated = x;
+                        y_translated = y;
                     }
                     uint pos = y_translated * LCD_WIDTH + x_translated;
 #endif
@@ -1174,6 +1198,9 @@ void Graphics4D::RectangleFilledWithAlpha(int x1, int y1, int x2, int y2, const 
                     x_translated = y;
                     y_translated = LCD_HEIGHT - 1 - x;
                     break;
+                default: // for Compiler warning with MicroPython
+                    x_translated = x;
+                    y_translated = y;
                 }
                 uint pos = y_translated * LCD_WIDTH + x_translated;
 #endif
@@ -1254,6 +1281,11 @@ void Graphics4D::Hline(int y, int x1, int x2, uint16_t color, bool draw_fb)
         x2_translated = y;
         y2_translated = LCD_HEIGHT - 1 - x1;
         break;
+    default: // for Compiler warning with MicroPython
+        x1_translated = x1;
+        y1_translated = y; 
+        x2_translated = x2;
+        y2_translated = y;
     }
 
     uint w = x2_translated - x1_translated + 1;
@@ -1326,6 +1358,11 @@ void Graphics4D::Vline(int x, int y1, int y2, uint16_t color, bool draw_fb)
         x2_translated = y2;
         y2_translated = LCD_HEIGHT - 1 - x;
         break;
+    default: // for Compiler warning with MicroPython
+        x1_translated = x;
+        y1_translated = y1;
+        x2_translated = x;
+        y2_translated = y2;
     }
 
     uint w = x2_translated - x1_translated + 1;
@@ -1386,6 +1423,9 @@ void Graphics4D::PutPixel(int x, int y, uint16_t color, bool draw_fb)
         x_translated = y;
         y_translated = LCD_HEIGHT - 1 - x;
         break;
+    default: // for Compiler warning with MicroPython
+        x_translated = x;
+        y_translated = y;
     }
 
     // Write the pixel to the framebuffer
@@ -1428,6 +1468,9 @@ void Graphics4D::PutPixel(int x, int y, uint16_t color, uint8_t alpha, bool draw
         x_translated = y;
         y_translated = LCD_HEIGHT - 1 - x;
         break;
+    default: // for Compiler warning with MicroPython
+        x_translated = x;
+        y_translated = y;
     }
 
     // Write the pixel to the framebuffer
@@ -3474,7 +3517,7 @@ void GraphicsMedia4D::__show_digits(ImageControl4D hndl, MediaInfo4D digits, boo
 {
     // prepare aux buffer
     size_t pixel_count = digits->width * digits->height;
-    uint16_t *dest = NULL;
+    uint16_t *dest = nullptr;
 
     int x1 = digits->x;
     int y1 = digits->y;
@@ -3703,7 +3746,7 @@ void GraphicsMedia4D::__show_2_frame_gauge(ImageControl4D hndl, MediaInfo4D gaug
     gauge->last_value = value;
 
     size_t pixel_count = gauge->width * gauge->height;
-    uint16_t *dest;
+    uint16_t *dest = nullptr;
 
     int x1 = gauge->x;
     int y1 = gauge->y;
@@ -3817,7 +3860,11 @@ void GraphicsMedia4D::__show_2_frame_gauge(ImageControl4D hndl, MediaInfo4D gaug
     delete drawArea;
 
 #ifdef GEN4_RP2350_RGB
-    return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    if (dest != NULL) {
+        return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    } else {
+        return;
+    }
 #else
     return gfx.SendFrameBuffer(x1, y1, x2, y2);
 #endif
@@ -3843,7 +3890,7 @@ void GraphicsMedia4D::__show_linear_gauge(ImageControl4D hndl, MediaInfo4D gauge
 
     // prepare aux buffer
     size_t pixel_count = gauge->width * gauge->height;
-    uint16_t *dest;
+    uint16_t *dest = nullptr;
 
     int x1 = gauge->x;
     int y1 = gauge->y;
@@ -4062,7 +4109,7 @@ void GraphicsMedia4D::__show_knob(ImageControl4D hndl, MediaInfo4D knob, bool dr
 
     // prepare aux buffer
     size_t pixel_count = knob->width * knob->height;
-    uint16_t *dest;
+    uint16_t *dest = nullptr;
 
     int x1 = knob->x;
     int y1 = knob->y;
@@ -4183,7 +4230,11 @@ void GraphicsMedia4D::__show_knob(ImageControl4D hndl, MediaInfo4D knob, bool dr
 #endif
 
 #ifdef GEN4_RP2350_RGB
-    return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    if (dest != NULL) {
+        return gfx.RectangleFilled(x1, y1, x2, y2, dest);
+    } else {
+        return;
+    }
 #else
     return gfx.SendFrameBuffer(x1, y1, x2, y2);
 #endif

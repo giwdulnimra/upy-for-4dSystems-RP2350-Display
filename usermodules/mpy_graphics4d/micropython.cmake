@@ -157,7 +157,6 @@ target_compile_options(usermod_graphics4d INTERFACE
     -Wno-error
     -Wno-implicit-function-declaration
 )
-#target_compile_options(usermod INTERFACE -Wno-implicit-function-declaration)
 
 # Verknüpfe mit dem generischen usermod-Target (MicroPython-Link)
 target_link_libraries(usermod INTERFACE usermod_graphics4d)

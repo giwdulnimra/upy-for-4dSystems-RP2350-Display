@@ -1,7 +1,6 @@
 # ---------------- CONFIG -----------------
 $RemoteUser     = "armin"
-$RemoteHost     =
-    "10.19.28.19"
+$RemoteHost     = "10.19.28.130"
     #"code.protronic.local"
 $LocalBaseDir = "."
 $shContent = @"
@@ -32,6 +31,6 @@ make -j$(nproc)
 
 "@
 
-Set-Content -Path "$LocalBaseDir/config/config_build.sh" -Value ($shContent -replace "`r`n", "`n") -Encoding UTF8 -NoNewline
-scp .\config\config_build.sh "${RemoteUser}@${RemoteHost}:~/config_build.sh"
+Set-Content -Path "$LocalBaseDir/config_build.sh" -Value ($shContent -replace "`r`n", "`n") -Encoding UTF8 -NoNewline
+scp .\config_build.sh "${RemoteUser}@${RemoteHost}:~/config_build.sh"
 ssh $RemoteUser@$RemoteHost "bash ~/config_build.sh"

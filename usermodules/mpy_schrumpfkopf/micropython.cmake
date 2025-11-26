@@ -1,39 +1,21 @@
-set(MODULE_NAME core)
-set(USER_C_MODULES ${USER_C_MODULES} ${USERMOD_DIR})
-
-set(cpp_hardware_SRCS_C
-        ${USERMOD_DIR}/core.cpp
-)
-
-set(cpp_hardware_SRCS_CPP
-        ${USERMOD_DIR}/core.cpp
-)
-
-set(cpp_hardware_INC
-        ${USERMOD_DIR}
-        ${USERMOD_DIR}/src
-)
-set(${MODULE_NAME}_INC
-        ${USERMOD_DIR}
-        ${USERMOD_DIR}/src
-)
-target_link_libraries(cpp_hardware INTERFACE pico_stdlib)
-target_link_libraries(${MODULE_NAME} INTERFACE pico_stdlib)
-
-
-# CMake configuration for the hello world user module
-#add_library(usermod_hello_world INTERFACE)
+# Create INERFACE-Library-Target
+add_library(usermod_schrumpfkopf INTERFACE)
 
 # add source files to the module
-#target_sources(usermod_hello_world INTERFACE
-#    ${CMAKE_CURRENT_LIST_DIR}/src/helloworld.c
-#)
+target_sources(usermod_schrumpfkopf INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/src/core.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/micropython.wrapper.cpp
+)
 
 # include the current directory for header files
-#target_include_directories(usermod_hello_world INTERFACE
-#    ${CMAKE_CURRENT_LIST_DIR}
-#    ${CMAKE_CURRENT_LIST_DIR}/src
-#)
+target_include_directories(usermod_schrumpfkopf INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/src
+)
 
-# Link the user module to the main usermod target
-#target_link_libraries(usermod INTERFACE usermod_hello_world)
+target_link_libraries(usermod INTERFACE usermod_schrumpfkopf)
+target_link_libraries(usermod_schrumpfkopf INTERFACE
+        hardware_gpio
+        hardware_pio
+        pico_stdlib
+)

@@ -3,12 +3,13 @@ add_library(usermod_hello_world INTERFACE)
 
 # add source files to the module
 target_sources(usermod_hello_world INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/helloworld.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/helloworld.c
 )
 
 # include the current directory for header files
 target_include_directories(usermod_hello_world INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
 # Link the user module to the main usermod target

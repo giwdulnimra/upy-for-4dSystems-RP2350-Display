@@ -1,6 +1,6 @@
 #include "Graphics4D.h"
 #include <new> // For std::nothrow
-extern "C" {
+
 #include "py/obj.h"
 #include "py/runtime.h"
 #include "py/builtin.h"
@@ -29,7 +29,7 @@ typedef struct _mp_obj_textarea_t {
 } mp_obj_textarea_t;
 
 /*// Factory-Funktion für TextArea
-static mp_obj_t mp_textarea_make_new(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_textarea_make_new(size_t n_args, const mp_obj_t *args) {
     if (n_args != 6) {
         mp_raise_TypeError(MP_ERROR_TEXT("CreateTextArea(x1, y1, x2, y2, fg, bg)"));
     }
@@ -51,7 +51,7 @@ static mp_obj_t mp_textarea_make_new(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_textarea_make_new_obj, 6, 6, mp_textarea_make_new);*/
 
 // deinit / close method
-static mp_obj_t mp_textarea_deinit(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_textarea_deinit(size_t n_args, const mp_obj_t *args) {
     mp_obj_textarea_t *self = static_cast<mp_obj_textarea_t*>(MP_OBJ_TO_PTR(args[0]));
     if (self->ta) {
         delete self->ta;
@@ -72,7 +72,7 @@ const mp_obj_type_t graphics4d_TextArea_type = {
     .base = { &mp_type_type },
     .name = MP_QSTR_TextArea,
     //.make_new = NULL, // Konstruktion nur über Factory
-    //.locals_dict = (mp_obj_dict_t*)&mp_textarea_locals,
+    .locals_dict = (mp_obj_dict_t*)&mp_textarea_locals, //?
 };
 
 
@@ -102,7 +102,7 @@ typedef struct _mp_obj_graphics4d_t {
 } mp_obj_graphics4d_t;
 
 // Constructor for the Graphics4D class - graphics4d.init()
-static mp_obj_t mp_graphics4d_make_new(const mp_obj_type_t *type,
+extern "C" mp_obj_t mp_graphics4d_make_new(const mp_obj_type_t *type,
                                      size_t n_args, size_t n_kw,
                                      const mp_obj_t *args) {
     // No arguments are expected for Constructor
@@ -130,7 +130,7 @@ static mp_obj_t mp_graphics4d_make_new(const mp_obj_type_t *type,
 /*static MP_DEFINE_CONST_FUN_OBJ_KW(mp_graphics4d_make_new_obj, 0, mp_graphics4d_make_new);*/
 
 // Destructor / deinit method
-static mp_obj_t mp_graphics4d_deinit(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_deinit(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     if (self->gfx) {
         //delete self->gfx;
@@ -142,7 +142,7 @@ static mp_obj_t mp_graphics4d_deinit(size_t n_args, const mp_obj_t *args) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_deinit_obj, 1, 1, mp_graphics4d_deinit);
 // close()-alias for deinit
-static mp_obj_t mp_graphics4d_close(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_close(size_t n_args, const mp_obj_t *args) {
     return mp_graphics4d_deinit(1, args);
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_close_obj, 1, 1, mp_graphics4d_close);
@@ -151,7 +151,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_close_obj, 1, 1, mp_gra
 #define GFX_CHECK(self)     if (!self || !(self)->gfx) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Graphics4D not initialized or closed properly"));}
 
 // Method: DrawWidget(num, f, x, y, gci_array)
-static mp_obj_t mp_graphics4d_draw_widget(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_draw_widget(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     if (n_args != 6) {
@@ -176,7 +176,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_draw_widget_obj, 6, 6, 
 // ~ Reset
 
 // Method: BlendColor(base_color, new_color, alpha)
-static mp_obj_t mp_graphics4d_blend_color(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_blend_color(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint16_t base_color = (uint16_t)mp_obj_get_int(args[1]);
@@ -189,7 +189,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_blend_color_obj, 4, 4, 
 
 
 // Method: getWidth()
-static mp_obj_t mp_graphics4d_get_width(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_get_width(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint width = self->gfx->GetWidth();
@@ -198,7 +198,7 @@ static mp_obj_t mp_graphics4d_get_width(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_get_width_obj, 1, 1, mp_graphics4d_get_width);
 
 // Method: getHeight()
-static mp_obj_t mp_graphics4d_get_height(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_get_height(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint height = self->gfx->GetHeight();
@@ -207,7 +207,7 @@ static mp_obj_t mp_graphics4d_get_height(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_get_height_obj, 1, 1, mp_graphics4d_get_height);
 
 // Method: setBacklightLevel(int)
-static mp_obj_t mp_graphics4d_set_backlight_level(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_set_backlight_level(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int level = mp_obj_get_int(args[1]);
@@ -217,7 +217,7 @@ static mp_obj_t mp_graphics4d_set_backlight_level(size_t n_args, const mp_obj_t 
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_set_backlight_level_obj, 2, 2, mp_graphics4d_set_backlight_level);
 
 // Method: setContrast(int)
-static mp_obj_t mp_graphics4d_contrast(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_contrast(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int contrast = mp_obj_get_int(args[1]);
@@ -227,7 +227,7 @@ static mp_obj_t mp_graphics4d_contrast(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_contrast_obj, 2, 2, mp_graphics4d_contrast);
 
 // Method: Screenmode(orientation)
-static mp_obj_t mp_graphics4d_screenmode(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_screenmode(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int mode = mp_obj_get_int(args[1]);
@@ -241,7 +241,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_screenmode_obj, 2, 2, m
 // ~ GetFrameBuffer
 
 // Method: setBackgroundColor(new_color)
-static mp_obj_t mp_graphics4d_set_background_color(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_set_background_color(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint16_t color = (uint16_t)mp_obj_get_int(args[1]);
@@ -251,7 +251,7 @@ static mp_obj_t mp_graphics4d_set_background_color(size_t n_args, const mp_obj_t
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_set_background_color_obj, 2, 2, mp_graphics4d_set_background_color);
 
 // Method: ClipWindow(x1, y1, x2, y2) || ClipWindow() -> reset
-static mp_obj_t mp_graphics4d_clip_window(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_clip_window(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     if (n_args == 1) {
@@ -272,7 +272,7 @@ static mp_obj_t mp_graphics4d_clip_window(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_clip_window_obj, 1, 5, mp_graphics4d_clip_window);
 
 // Method: MoveTo(x, y)
-static mp_obj_t mp_graphics4d_move_to(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_move_to(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x = mp_obj_get_int(args[1]);
@@ -283,7 +283,7 @@ static mp_obj_t mp_graphics4d_move_to(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_move_to_obj, 3, 3, mp_graphics4d_move_to);
 
 // Method: MoveRel(x_off, y_off)
-static mp_obj_t mp_graphics4d_move_rel(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_move_rel(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x_off = mp_obj_get_int(args[1]);
@@ -294,7 +294,7 @@ static mp_obj_t mp_graphics4d_move_rel(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_move_rel_obj, 3, 3, mp_graphics4d_move_rel);
 
 // Method: ClearScreen(draw_fb=True)
-static mp_obj_t mp_graphics4d_clear_screen(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_clear_screen(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     bool draw_fb = (n_args > 1) ? mp_obj_is_true(args[1]) : true;
@@ -304,7 +304,7 @@ static mp_obj_t mp_graphics4d_clear_screen(size_t n_args, const mp_obj_t *args) 
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_clear_screen_obj, 1, 2, mp_graphics4d_clear_screen);
 
 // Method: RectangleF(x1, y1, x2, y2, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -319,7 +319,7 @@ static mp_obj_t mp_graphics4d_rectangle_filled(size_t n_args, const mp_obj_t *ar
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_obj, 6, 7, mp_graphics4d_rectangle_filled);
 
 // Method: RectangleFAlpha(x1, y1, x2, y2, buffer, draw_fb=True)
-static mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -335,7 +335,7 @@ static mp_obj_t mp_graphics4d_rectangle_filled_alpha(size_t n_args, const mp_obj
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_filled_alpha_obj, 6, 7, mp_graphics4d_rectangle_filled_alpha);
 
 // Method: HLine(x1, x2, y, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_hline(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_hline(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -349,7 +349,7 @@ static mp_obj_t mp_graphics4d_hline(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_hline_obj, 4, 5, mp_graphics4d_hline);
 
 // Method: VLine(x, y1, y2, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_vline(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_vline(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x = mp_obj_get_int(args[1]);
@@ -363,7 +363,7 @@ static mp_obj_t mp_graphics4d_vline(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_vline_obj, 4, 5, mp_graphics4d_vline);
 
 // Method: Rectangle(x1, y1, x2, y2, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_rectangle(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_rectangle(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -378,7 +378,7 @@ static mp_obj_t mp_graphics4d_rectangle(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_rectangle_obj, 6, 7, mp_graphics4d_rectangle);
 
 // Method: Pixel(x, y, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_put_pixel(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_put_pixel(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x = mp_obj_get_int(args[1]);
@@ -391,7 +391,7 @@ static mp_obj_t mp_graphics4d_put_pixel(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_put_pixel_obj, 4, 5, mp_graphics4d_put_pixel);
 
 // Method: Line(x1, y1, x2, y2, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_line(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_line(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -406,7 +406,7 @@ static mp_obj_t mp_graphics4d_line(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_line_obj, 6, 7, mp_graphics4d_line);
 
 // Method: Ellipse(xcenter, ycenter, radx, rady, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_ellipse(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_ellipse(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xc = mp_obj_get_int(args[1]);
@@ -421,7 +421,7 @@ static mp_obj_t mp_graphics4d_ellipse(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_ellipse_obj, 6, 7, mp_graphics4d_ellipse);
 
 // Method: EllipseF(xcenter, ycenter, radx, rady, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_ellipse_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_ellipse_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xc = mp_obj_get_int(args[1]);
@@ -436,7 +436,7 @@ static mp_obj_t mp_graphics4d_ellipse_filled(size_t n_args, const mp_obj_t *args
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_ellipse_filled_obj, 6, 7, mp_graphics4d_ellipse_filled);
 
 // Method: Circle(xc, yc, radius, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_circle(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_circle(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xc = mp_obj_get_int(args[1]);
@@ -450,7 +450,7 @@ static mp_obj_t mp_graphics4d_circle(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_circle_obj, 5, 6, mp_graphics4d_circle);
 
 // Method: Arc(xa, ya, radius, sa, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_arc(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_arc(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xa = mp_obj_get_int(args[1]);
@@ -465,7 +465,7 @@ static mp_obj_t mp_graphics4d_arc(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_arc_obj, 6, 7, mp_graphics4d_arc);
 
 // Method: ArcF(xa, ya, radius, sa, ea, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_arc_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_arc_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xa = mp_obj_get_int(args[1]);
@@ -481,7 +481,7 @@ static mp_obj_t mp_graphics4d_arc_filled(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_arc_filled_obj, 7, 8, mp_graphics4d_arc_filled);
 
 // Method: CircleF(xcenter, ycenter, radius, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_circle_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_circle_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int xc = mp_obj_get_int(args[1]);
@@ -495,7 +495,7 @@ static mp_obj_t mp_graphics4d_circle_filled(size_t n_args, const mp_obj_t *args)
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_circle_filled_obj, 5, 6, mp_graphics4d_circle_filled);
 
 // Method: Triangle(x1, y1, x2, y2, x3, y3, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_triangle(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_triangle(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -512,7 +512,7 @@ static mp_obj_t mp_graphics4d_triangle(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_triangle_obj, 7, 8, mp_graphics4d_triangle);
 
 // Method: TriangleF(x1, y1, x2, y2, x3, y3, color, draw_fb=True)
-static mp_obj_t mp_graphics4d_triangle_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_triangle_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -540,8 +540,8 @@ static void mp_obj_to_int_array(mp_obj_t list_obj, int *out_array, size_t *out_l
     }
 }
 // Methon: Polyline([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-//static mp_obj_t mp_graphics4d_polyline(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
-static mp_obj_t mp_graphics4d_polyline(size_t n_args, const mp_obj_t *args) {
+//extern "C" mp_obj_t mp_graphics4d_polyline(mp_obj_t vx_obj, mp_obj_t vy_obj, mp_obj_t color_obj, mp_obj_t draw_fb_obj) {
+extern "C" mp_obj_t mp_graphics4d_polyline(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int vx[256], vy[256];
@@ -561,7 +561,7 @@ static mp_obj_t mp_graphics4d_polyline(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_polyline_obj, 5, 5, mp_graphics4d_polyline);
 
 // Method: Polygon([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-static mp_obj_t mp_graphics4d_polygon(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_polygon(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int vx[256], vy[256];
@@ -581,7 +581,7 @@ static mp_obj_t mp_graphics4d_polygon(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_polygon_obj, 5, 5, mp_graphics4d_polygon);
 
 // Method: PolygonF([x1, x2, ...], [y1, y2, ...], color, draw_fb=True)
-static mp_obj_t mp_graphics4d_polygon_filled(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_polygon_filled(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int vx[256], vy[256];
@@ -606,7 +606,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_polygon_filled_obj, 5, 
 // ~ __get_aux_buffer x2
 
 // Method: setFont(font: int)
-static mp_obj_t mp_graphics4d_set_font(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_set_font(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int font_id = mp_obj_get_int(args[1]);
@@ -624,7 +624,7 @@ static mp_obj_t mp_graphics4d_set_font(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_set_font_obj, 2, 2, mp_graphics4d_set_font);
 
 // Method: setFontForeground(color)
-static mp_obj_t mp_graphics4d_set_font_fg(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_set_font_fg(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint16_t color = mp_obj_get_int(args[1]);
@@ -634,7 +634,7 @@ static mp_obj_t mp_graphics4d_set_font_fg(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_set_font_fg_obj, 2, 2, mp_graphics4d_set_font_fg);
 
 // Method: setFontBackground(color)
-static mp_obj_t mp_graphics4d_set_font_bg(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_set_font_bg(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint16_t color = mp_obj_get_int(args[1]);
@@ -644,7 +644,7 @@ static mp_obj_t mp_graphics4d_set_font_bg(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_set_font_bg_obj, 2, 2, mp_graphics4d_set_font_bg);
 
 // Method: getStringWidth(string: str)
-static mp_obj_t mp_graphics4d_get_string_width(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_get_string_width(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     const char *ts = mp_obj_str_get_str(args[1]);
@@ -654,7 +654,7 @@ static mp_obj_t mp_graphics4d_get_string_width(size_t n_args, const mp_obj_t *ar
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_get_string_width_obj, 2, 2, mp_graphics4d_get_string_width);
 
 // Method: getFontHeight
-static mp_obj_t mp_graphics4d_get_font_height(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_get_font_height(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     uint height = self->gfx->GetFontHeight();
@@ -666,7 +666,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_get_font_height_obj, 1,
 
 
 // Method: print(text, draw_fb=True) || print(textarea, text, draw_fb_True)
-static mp_obj_t mp_graphics4d_print(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_print(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     // Case: print(str, draw_fb)
@@ -692,7 +692,7 @@ static mp_obj_t mp_graphics4d_print(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_print_obj, 2, 4, mp_graphics4d_print);
 
 /*// Method: printf(text, *args, draw_fb=True) || printf(textarea, text, *args, draw_fb_True)
-static mp_obj_t mp_graphics4d_printf(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_printf(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     // Initialize dynamic String-Buffer (vstr)
@@ -728,7 +728,7 @@ static mp_obj_t mp_graphics4d_printf(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR(mp_graphics4d_printf_obj, 2, mp_graphics4d_printf);*/
 
 // Method: CreateTextArea(x1, y1, x2, y2, fg_color, bg_color)
-static mp_obj_t mp_graphics4d_create_text_area(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_create_text_area(size_t n_args, const mp_obj_t *args) {
     mp_obj_graphics4d_t *self = (mp_obj_graphics4d_t *)MP_OBJ_TO_PTR(args[0]);
     GFX_CHECK(self);
     int x1 = mp_obj_get_int(args[1]);
@@ -758,7 +758,7 @@ GRAPHICSMEDIA4D
 
 // Method: LoadImageControl(filename, x,y) || LoadImageControl(gci_array)
 // Factory-Funktion: graphics4d.LoadImageControl(filename, [formIndex]) ODER graphics4d.LoadImageControl(buffer, [formIndex])
-static mp_obj_t mp_graphics4d_load_image_control(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_graphics4d_load_image_control(size_t n_args, const mp_obj_t *args) {
     if (n_args < 1 || n_args > 2) {mp_raise_TypeError(MP_ERROR_TEXT("LoadImageControl(file_or_buf, [formIndex])"));}
     uint formIndex = (n_args == 2) ? mp_obj_get_int(args[1]) : -1;
     ImageControl4D hndl = NULL;
@@ -783,7 +783,7 @@ static mp_obj_t mp_graphics4d_load_image_control(size_t n_args, const mp_obj_t *
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_graphics4d_load_image_control_obj, 1, 2, mp_graphics4d_load_image_control);
 
 // Method: ImageControl.getCount()
-static mp_obj_t mp_imagecontrol_get_count(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_get_count(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     //int count = img.GetCount(self->hndl);
@@ -793,7 +793,7 @@ static mp_obj_t mp_imagecontrol_get_count(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_get_count_obj, 1, 1, mp_imagecontrol_get_count);
 
 // Method: ImageControl.getInfo(index)
-static mp_obj_t mp_imagecontrol_get_info(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_get_info(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -806,7 +806,7 @@ static mp_obj_t mp_imagecontrol_get_info(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_get_info_obj, 2, 2, mp_imagecontrol_get_info);
 
 // Method: ImageControl.setValue(index, value)
-static mp_obj_t mp_imagecontrol_set_value(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_set_value(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -818,7 +818,7 @@ static mp_obj_t mp_imagecontrol_set_value(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_set_value_obj, 3, 3, mp_imagecontrol_set_value);
 
 // Method: ImageControl.getValue(index)
-static mp_obj_t mp_imagecontrol_get_value(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_get_value(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -829,7 +829,7 @@ static mp_obj_t mp_imagecontrol_get_value(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_get_value_obj, 2, 2, mp_imagecontrol_get_value);
 
 // Method: ImageControl.show(index, [draw_fb])
-static mp_obj_t mp_imagecontrol_show(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_show(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = static_cast<mp_obj_imagecontrol_t*>(MP_OBJ_TO_PTR(args[0]));
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -841,7 +841,7 @@ static mp_obj_t mp_imagecontrol_show(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_show_obj, 2, 3, mp_imagecontrol_show);
 
 // Method: ImageControl.showForm(index)
-static mp_obj_t mp_imagecontrol_show_form(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_show_form(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -852,7 +852,7 @@ static mp_obj_t mp_imagecontrol_show_form(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_imagecontrol_show_form_obj, 2, 2, mp_imagecontrol_show_form);
 
 // Method: ImageControl.touched(index)
-static mp_obj_t mp_imagecontrol_touched(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_touched(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = (mp_obj_imagecontrol_t *)MP_OBJ_TO_PTR(args[0]);
     if (!self->hndl) mp_raise_ValueError(MP_ERROR_TEXT("ImageControl is closed"));
     int index = mp_obj_get_int(args[1]);
@@ -971,7 +971,7 @@ typedef struct _mp_obj_touch4d_t {
 
 
 // Constructor for the Python Touch class: touch = graphics4d.Touch4D()
-static mp_obj_t mp_touch4d_make_new(const mp_obj_type_t *type,
+extern "C" mp_obj_t mp_touch4d_make_new(const mp_obj_type_t *type,
                                      size_t n_args, size_t n_kw,
                                      const mp_obj_t *args) {
     // No arguments are expected for the constructor
@@ -992,7 +992,7 @@ static mp_obj_t mp_touch4d_make_new(const mp_obj_type_t *type,
 /*static MP_DEFINE_CONST_FUN_OBJ_KW(mp_touch4d_make_new_obj, 0, mp_touch4d_make_new);*/
 
 // Destructor / deinit method
-static mp_obj_t mp_touch4d_deinit(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_deinit(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     if (self->touch) {
         //delete self->touch;
@@ -1004,7 +1004,7 @@ static mp_obj_t mp_touch4d_deinit(size_t n_args, const mp_obj_t *args) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_deinit_obj, 1, 1, mp_touch4d_deinit);
 // close()-alias for deinit
-static mp_obj_t mp_touch4d_close(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_close(size_t n_args, const mp_obj_t *args) {
     return mp_touch4d_deinit(1, args);
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_close_obj, 1, 1, mp_touch4d_close);
@@ -1013,7 +1013,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_close_obj, 1, 1, mp_touch4
 #define TOUCH_CHECK(self)     if (!self || !(self)->touch) {mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("GraphicsTouch4D not initialized"));}
 
 /*// Method: Calibrate() -> bool
-static mp_obj_t mp_touch4d_calibrate(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_calibrate(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     bool result = self->touch->Calibrate();
@@ -1025,7 +1025,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_calibrate_obj, 1, 1, mp_to
 // ~ __get_calibration
 
 // Method: getPoints() -> int
-static mp_obj_t mp_touch4d_get_points(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_points(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t points = self->touch->GetPoints();
@@ -1034,7 +1034,7 @@ static mp_obj_t mp_touch4d_get_points(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_points_obj, 1, 1, mp_touch4d_get_points);
 
 // Method: getStatus(point=0) -> int
-static mp_obj_t mp_touch4d_get_status(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_status(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1044,7 +1044,7 @@ static mp_obj_t mp_touch4d_get_status(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_status_obj, 1, 2, mp_touch4d_get_status);
 
 // Method: getID(point=0) -> int
-static mp_obj_t mp_touch4d_get_id(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_id(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1054,7 +1054,7 @@ static mp_obj_t mp_touch4d_get_id(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_id_obj, 1, 2, mp_touch4d_get_id);
 
 // Method: getX(point=0) -> int
-static mp_obj_t mp_touch4d_get_x(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_x(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1064,7 +1064,7 @@ static mp_obj_t mp_touch4d_get_x(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_x_obj, 1, 2, mp_touch4d_get_x);
 
 // Method: getY(point=0) -> int
-static mp_obj_t mp_touch4d_get_y(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_y(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1077,7 +1077,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_y_obj, 1, 2, mp_touch4
 // ~ __get_raw_y
 
 // Method: getWeight(point=0) -> int
-static mp_obj_t mp_touch4d_get_weight(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_weight(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1087,7 +1087,7 @@ static mp_obj_t mp_touch4d_get_weight(size_t n_args, const mp_obj_t *args) {
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(mp_touch4d_get_weight_obj, 1, 2, mp_touch4d_get_weight);
 
 // Method: getArea(point=0) -> int
-static mp_obj_t mp_touch4d_get_area(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_touch4d_get_area(size_t n_args, const mp_obj_t *args) {
     mp_obj_touch4d_t *self = (mp_obj_touch4d_t *)MP_OBJ_TO_PTR(args[0]);
     TOUCH_CHECK(self);
     uint8_t point = (n_args > 1) ? mp_obj_get_int(args[1]) : 0;
@@ -1130,7 +1130,7 @@ MP_DEFINE_CONST_OBJ_TYPE(
 
 //###
 // deinit / close method für ImageControl
-static mp_obj_t mp_imagecontrol_deinit(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t mp_imagecontrol_deinit(size_t n_args, const mp_obj_t *args) {
     mp_obj_imagecontrol_t *self = static_cast<mp_obj_imagecontrol_t*>(MP_OBJ_TO_PTR(args[0]));
     if (self->hndl) {
         // HINWEIS: Du musst ~ImageControl() in Graphics4D.h public machen!
@@ -1153,5 +1153,3 @@ static const mp_rom_map_elem_t mp_imagecontrol_locals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_imagecontrol_touched_obj) },
 };
 static MP_DEFINE_CONST_DICT(mp_imagecontrol_locals, mp_imagecontrol_locals_table);
-
-} // close extern "C"

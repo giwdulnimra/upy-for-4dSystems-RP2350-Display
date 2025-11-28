@@ -1,2 +1,3 @@
-# include example module
-SRC_USERMOD_C += $(EXAMPLE_MOD_DIR)/modexample.c
+# includde user module source files
+SRC_USERMOD_CPP += $(USERMOD_DIR)/micropython.wrapper.c
+SRC_USERMOD_CPP += $(USERMOD_DIR)/core.cpp

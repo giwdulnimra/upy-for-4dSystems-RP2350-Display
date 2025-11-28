@@ -1,22 +1,23 @@
-import cpp_hardware
+import core
 import time
 
-# 1. LED-Objekt erstellen
-led = cpp_hardware.LED()
+# 1. LED-Steuerung testen (verwenden Sie einen Pin, der auf Ihrem Board verfügbar ist)
+# Wir verwenden GPIO 0 als Beispielpin
+led_pin = 0 
+led = widget_core.Led(led_pin)
 
-# 2. Status ausgeben (ruft den custom Print-Callback auf)
-print(led) # Ausgabe: <LED-Objekt LED (Pin 25): AUS>
+# 2. Konsolenausgabe testen
+console = widget_core.Console()
 
-# 3. LED ansteuern
-print("LED AN...")
-led.on()
+console.debug("Starte LED Test...") 
+# Sollte auf der Debug-Konsole erscheinen (printf-Ausgang)
+
+led.turn_on()
+console.info("LED sollte jetzt AN sein.") 
+# Sollte auf der REPL erscheinen
+print(led)
 time.sleep(1)
 
-# 4. Status prüfen und erneut ausgeben
-print("LED Status:", led.is_on()) # Ausgabe: LED Status: True
-print(led) # Ausgabe: <LED-Objekt LED (Pin 25): AN>
-
-# 5. Ausschalten
-print("LED AUS...")
-led.off()
-time.sleep(1)
+led.turn_off()
+console.info("LED sollte jetzt AUS sein.")
+print(led)

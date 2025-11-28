@@ -1,15 +1,21 @@
-set(USER_C_MODULES ${USER_C_MODULES} ${USERMOD_DIR})
+# Create INERFACE-Library-Target
+add_library(usermod_schrumpfkopf INTERFACE)
 
-set(cpp_hardware_SRCS_C
-        ${USERMOD_DIR}/module.cpp
+# add source files to the module
+target_sources(usermod_schrumpfkopf INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}/src/core.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/micropython.wrapper.cpp
 )
 
-set(cpp_hardware_SRCS_CPP
-        ${USERMOD_DIR}/led_driver.cpp
+# include the current directory for header files
+target_include_directories(usermod_schrumpfkopf INTERFACE
+    ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
-set(cpp_hardware_INC
-        ${USERMOD_DIR}
+target_link_libraries(usermod INTERFACE usermod_schrumpfkopf)
+target_link_libraries(usermod_schrumpfkopf INTERFACE
+        hardware_gpio
+        hardware_pio
+        pico_stdlib
 )
-
-target_link_libraries(cpp_hardware INTERFACE pico_stdlib)

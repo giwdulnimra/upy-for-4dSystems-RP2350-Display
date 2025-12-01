@@ -23,43 +23,40 @@ typedef struct _core_led_obj_t {
 } core_led_obj_t;
 
 // Initialization of core.LED object: __init__(self, pin)
-static mp_obj_t core_led_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-//extern "C" mp_obj_t core_led_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+//static mp_obj_t core_led_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+extern "C" mp_obj_t core_led_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 1, 1, false); // expect exactly 1 argument (pin number)
     core_led_obj_t *self = m_new_obj(core_led_obj_t);
     self->base.type = &mp_type_core_LED;
     uint32_t pin = mp_obj_get_int(args[0]);
     // call C++ constructor with placement new
-    new (&self->driver) LedDriver(pin);
+    new (&self->driver) Initialize(pin);
 
     return MP_OBJ_FROM_PTR(self);
 }
+//static MP_DEFINE_CONST_FUN_OBJ_KW(core_led_make_new_obj, 1, core_led_make_new);
 
 // Methode: led.on()
-static mp_obj_t core_led_on(mp_obj_t self_in) {
-//extern "C" mp_obj_t core_led_on(mp_obj_t self_in) {
+//static mp_obj_t core_led_on(mp_obj_t self_in) {
+extern "C" mp_obj_t core_led_on(mp_obj_t self_in) {
     core_led_obj_t *self = (core_led_obj_t*)MP_OBJ_TO_PTR(self_in);
     self->driver.turn_on();
     return mp_const_none;
 }
-//static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(core_led_on_obj, 1, 1, core_led_on);
-//static MP_DEFINE_CONST_FUN_OBJ_KW(core_led_on_obj, 1, core_led_on);
 static MP_DEFINE_CONST_FUN_OBJ_1(core_led_on_obj, core_led_on);
 
 // Methode: led.off()
-static mp_obj_t core_led_off(mp_obj_t self_in) {
-//extern "C" mp_obj_t core_led_off(mp_obj_t self_in) {
+//static mp_obj_t core_led_off(mp_obj_t self_in) {
+extern "C" mp_obj_t core_led_off(mp_obj_t self_in) {
     core_led_obj_t *self = (core_led_obj_t*)MP_OBJ_TO_PTR(self_in);
     self->driver.turn_off();
     return mp_const_none;
 }
-//static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(core_led_off_obj, 1, 1, core_led_off);
-//static MP_DEFINE_CONST_FUN_OBJ_KWN(core_led_off_obj, 1, core_led_off);
 static MP_DEFINE_CONST_FUN_OBJ_1(core_led_off_obj, core_led_off);
 
 // Methode: led.status()
-static mp_obj_t core_led_status(mp_obj_t self_in) {
-//extern "C" mp_obj_t core_led_status(mp_obj_t self_in) {
+//static mp_obj_t core_led_status(mp_obj_t self_in) {
+extern "C" mp_obj_t core_led_status(mp_obj_t self_in) {
     core_led_obj_t *self = (core_led_obj_t*)MP_OBJ_TO_PTR(self_in);
     self->driver.print_status();
     bool led_status = self->driver.is_on();
@@ -67,10 +64,11 @@ static mp_obj_t core_led_status(mp_obj_t self_in) {
     mp_printf(&mp_plat_print, "[MPY] Python confirms: LED (Pin %u) %s\n", pin, led_status ? " is ON" : " is OFF");
     return mp_obj_new_bool(led_status);
 }
-//static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(core_led_status_obj, 1, 1, core_led_status);
-//static MP_DEFINE_CONST_FUN_OBJ_KW(core_led_status_obj, 1, core_led_status);
-static MP_DEFINE_CONST_FUN_OBJ_1(core_led_status_obj, core_led_status);
+static MP_DEFINE_CONST_FUN_OBJ_1(core_led_status_obj, core_led_status);   
+    
 
+    // SCHRITT 3: is_on zurückgeben (als Python Boolean)
+    return mp_obj_new_bool(is_active);
 // method-table for core.LED-class
 static const mp_rom_map_elem_t core_led_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_on), MP_ROM_PTR(&core_led_on_obj) },
@@ -98,18 +96,18 @@ typedef struct _console_obj_t {
 } console_obj_t;
 
 // Initialization of core.Console object: __init__(self)
-static mp_obj_t core_console_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-//extern "C" mp_obj_t core_console_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+//static mp_obj_t core_console_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+extern "C" mp_obj_t core_console_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 0, 0, false);
     core_console_obj_t *self = (core_console_obj_t*)m_new_obj(core_console_obj_t);
     self->base.type = &mp_type_Core_Console;
     new (&self->console) Console();
     return MP_OBJ_FROM_PTR(self);
 }
+//static MP_DEFINE_CONST_FUN_OBJ_KW(core_console_make_new_obj, 1, core_console_make_new);
 
 // Methode: console.info(format, ...)
-static mp_obj_t console_info(size_t n_args, const mp_obj_t *args) {
-//extern "C" mp_obj_t console_info(size_t n_args, const mp_obj_t *args) {
+extern "C" mp_obj_t console_info(size_t n_args, const mp_obj_t *args) {
     core_console_obj_t *self = (core_console_obj_t*)MP_OBJ_TO_PTR(args[0]);
     const char *format_str = mp_obj_str_get_str(args[1]); // extractr format string
     char buffer[256]; // Stack-Buffer
@@ -122,7 +120,7 @@ static mp_obj_t console_info(size_t n_args, const mp_obj_t *args) {
         mp_hal_stdout_tx_strn("\n", 1);
     }
     else {
-        mp_hal_stdout_tx_strn("[MPY] BUFFER_OVERFLOW");
+        mp_hal_stdout_tx_strn("BUFFER_OVERFLOW");
         mp_hal_stdout_tx_strn("\n", 1);
     }
     return mp_const_none;

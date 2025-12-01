@@ -1,6 +1,6 @@
 #include "Graphics4D.h"
 #include <new> // For std::nothrow
-
+//extern "C" {
 #include "py/obj.h"
 #include "py/runtime.h"
 #include "py/builtin.h"
@@ -1153,3 +1153,5 @@ static const mp_rom_map_elem_t mp_imagecontrol_locals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_Touched), MP_ROM_PTR(&mp_imagecontrol_touched_obj) },
 };
 static MP_DEFINE_CONST_DICT(mp_imagecontrol_locals, mp_imagecontrol_locals_table);
+
+//} // close extern "C"

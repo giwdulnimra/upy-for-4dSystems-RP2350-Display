@@ -1,23 +1,21 @@
-import core
 import time
+from core import led, console
 
-# 1. LED-Steuerung testen (verwenden Sie einen Pin, der auf Ihrem Board verfügbar ist)
-# Wir verwenden GPIO 0 als Beispielpin
+# 1. LED-Steuerung testen 
 led_pin = 0 
-led = widget_core.Led(led_pin)
+led = LED(led_pin)
 
 # 2. Konsolenausgabe testen
-console = widget_core.Console()
+console = Console() # Instanziieren
 
-console.debug("Starte LED Test...") 
-# Sollte auf der Debug-Konsole erscheinen (printf-Ausgang)
+console.info("Starte LED Test...")  #
 
-led.turn_on()
+led.on()
 console.info("LED sollte jetzt AN sein.") 
-# Sollte auf der REPL erscheinen
-print(led)
-time.sleep(1)
+led.status()
 
-led.turn_off()
+time.sleep(5)
+
+led.off()
 console.info("LED sollte jetzt AUS sein.")
-print(led)
+print(led.status())

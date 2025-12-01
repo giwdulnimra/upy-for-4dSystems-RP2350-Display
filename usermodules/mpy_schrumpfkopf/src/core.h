@@ -3,10 +3,7 @@
 #include <stdint.h> 
 #include <stdbool.h> 
 #include <stdarg.h> 
-
-#include "hardware/regs/sio.h"
-#include "hardware/addressmap.h"
-#include "hardware/gpio.h"
+#include <cstdio>   //printf
 
 class Console {
 public:
@@ -15,14 +12,15 @@ public:
     void print_debug(const char* message) const;
 };
 
-class Led {
+class LedDriver {
 public:
-    Led(uint32_t pin);
+    LedDriver(uint32_t pin);
     
     void turn_on();
     void turn_off();
     bool is_on() const;
-    void print_status(const mp_print_t *print) const;
+    uint32_t get_pin();
+    void print_status() const;
 
 private:
     uint32_t pin_;

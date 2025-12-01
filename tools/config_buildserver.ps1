@@ -1,7 +1,7 @@
 # ---------------- CONFIG -----------------
-$RemoteUser     = "armin"
-$RemoteHost     = "10.19.28.130"
-    #"code.protronic.local"
+$config = Get-Content "config.json" | ConvertFrom-Json
+$RemoteUser     = $config.user
+$RemoteHost     = $config.server
 $LocalBaseDir = "."
 $shContent = @"
 #!/bin/bash

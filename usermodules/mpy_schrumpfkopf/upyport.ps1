@@ -1,17 +1,20 @@
 # ---------------- CONFIG -----------------
-$RemoteUser     = "armin"
-$RemoteHost     = "10.19.28.130"
+$config = Get-Content "../../tools/ssh_server.json" | ConvertFrom-Json
+$RemoteUser     = $config.user
+$RemoteHost     = $config.server
+                  #$config.server_ip
 $LocalBaseDir   = "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
 $TargetBoard    = "4DSYS_RP2350_70"
                   #"RPI_PICO2_W"
 $BuildDirectory = "build-Test"
 $ClearBuild     = #$false
                   $true
-$ProjectName    = "mpy_helloworld"
+$ProjectName    = "mpy_schrumpfkopf"
 # -----------------------------------------
 # ------- COPY WS5-PROJEKT TO HOST --------
 Clear-Host
-scp -r "$LocalBaseDir/usermodules/$ProjectName/" "${RemoteUser}@${RemoteHost}:~/micropython/usermodules/$ProjectName"
+scp -r "$LocalBaseDir/usermodules/$ProjectName/" "${RemoteUser}@${RemoteHost}:~/micropython/usermodules/"
+ssh $RemoteUser@$RemoteHost "chmod -Rv u+rwX ~/micropython/usermodules/"
 
 # ---------------- BUILD ------------------
 $shContent = @"

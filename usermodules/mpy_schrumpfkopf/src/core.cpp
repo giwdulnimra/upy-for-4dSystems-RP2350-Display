@@ -1,4 +1,12 @@
+#include "hardware_regs/addressmap_part.h"
 #include "core.h"
+
+#ifndef REG_WRITE
+    #define REG_WRITE(addr, val) (*(volatile uint32_t*)(addr) = (val))
+#endif
+#ifndef REG_READ
+    #define REG_READ(addr)       (*(volatile uint32_t*)(addr))
+#endif
 
 static Console global_console;
 
@@ -6,29 +14,35 @@ static Console global_console;
 Console::Console() {}
 
 void Console::print_debug(const char* message) const {
-    printf("DEBUG: %s\n", message);
-    return message;
+    printf("[C++] DEBUG: %s\n", message);
 }
 
 
 // LED-Class Implementation
-LedDriver::Initialize(uint32_t pin) : pin_(pin) {
-    gpio_set_function(pin_, GPIO_FUNC_SIO);
-    SIO_OUT_DIR |= (1 << pin_); // Set Pin to Output
-
-    SIO_OUT_CLR = (1 << pin_); // Initialize to OFF
+LedDriver::LedDriver(uint32_t pin) : pin_(pin) {
+    uint32_t ctrl_reg = IO_BANK0_BASE + (pin_ * 8) + CTRL_OFFSET;
+    REG_WRITE(ctrl_reg, GPIO_FUNC_SIO);         // ensure SIO-functionality
+    REG_WRITE(SIO_BASE + SIO_GPIO_OE_SET_OFFSET, (1ul << pin_));    // output enable
+    REG_WRITE(SIO_BASE + SIO_GPIO_OUT_CLR_OFFSET, (1ul << pin_));   // set low 
 }
 
-void LedDriver::turn_on() {SIO_OUT_SET = (1 << pin_);} // Set Pin High
+void LedDriver::turn_on() {
+    REG_WRITE(SIO_BASE + SIO_GPIO_OUT_SET_OFFSET, (1ul << pin_));
+} // Set Pin High
 
-void LedDriver::turn_off() {SIO_OUT_CLR = (1 << pin_);} // Set Pin Low
+void LedDriver::turn_off() {
+    REG_WRITE(SIO_BASE + SIO_GPIO_OUT_CLR_OFFSET, (1ul << pin_));
+} // Set Pin Low
+
+uint32_t LedDriver::get_pin() const {return pin_;}
 
 bool LedDriver::is_on() const { // Read Pin Level
-    return (gpio_get_out_level(pin_) != 0);}
-    //return (*(volatile uint32_t *)(SIO_BASE_ADDR + 0x0C) & (1 << pin_)) != 0;}
+    uint32_t state = REG_READ(SIO_BASE + SIO_GPIO_IN_OFFSET);
+    return (state & (1ul << pin_)) != 0;
+}
     
-void LedDriver::print_status(const mp_print_t *print) const {
+void LedDriver::print_status() const {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "LED (Pin %u): %s", pin_, is_on() ? " is ON" : " is OFF"); 
+    printf(buffer, sizeof(buffer), "LED (Pin %u): %s", pin_, is_on() ? " is ON" : " is OFF"); 
     global_console.print_debug(buffer);
 }

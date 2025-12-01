@@ -28,6 +28,8 @@ set(MICROPY_PORT_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 # Set 1 to exclude VFS_FAT from extmod
 set(CUSTOM_VFS_FAT 0 CACHE BOOL "User module provides its own VFS_FAT implementation")
+# Set tu exclude headers, wich are used by vendor-modules but lead to problems while using with micropython
+set(MICROPY_BUILD 1 CACHE BOOL "exclude problematic headers of vendor-modules")
 
 # Set the board if it's not already set.
 if(NOT MICROPY_BOARD)

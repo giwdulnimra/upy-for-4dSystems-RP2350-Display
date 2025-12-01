@@ -15,11 +15,11 @@ public:
 class LedDriver {
 public:
     LedDriver(uint32_t pin);
-    
+
     void turn_on();
     void turn_off();
     bool is_on() const;
-    uint32_t get_pin();
+    uint32_t get_pin() const;
     void print_status() const;
 
 private:

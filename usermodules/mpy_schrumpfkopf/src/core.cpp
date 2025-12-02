@@ -43,6 +43,6 @@ bool LedDriver::is_on() const { // Read Pin Level
     
 void LedDriver::print_status() const {
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "LED (Pin %u): %s", pin_, is_on() ? " is ON" : " is OFF"); 
+    snprintf(buffer, sizeof(buffer), "LED (Pin %lu): %s", pin_, is_on() ? " is ON" : " is OFF"); 
     global_console.print_debug(buffer);
 }

@@ -1,5 +1,5 @@
 #include "hardware/regs/sio.h"
-#include "hardware/regs/io_banks0.h"
+#include "hardware/regs/io_bank0.h"
 
 #ifndef _u
     #include "hardware/platform_defs.h"

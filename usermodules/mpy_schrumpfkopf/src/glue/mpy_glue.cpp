@@ -41,7 +41,7 @@ extern "C" {
         }
     }
 
-    void bridge_console_print(ConsoleWrapper* w, const char* msg) {
+    void bridge_console_info(ConsoleWrapper* w, const char* msg) {
         w->obj->print_debug(msg);
     }
 }

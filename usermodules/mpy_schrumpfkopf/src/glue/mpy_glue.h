@@ -21,7 +21,7 @@ void bridge_led_print_status(LedWrapper* w);
 
 // Console functions
 ConsoleWrapper* bridge_console_new();
-bool bridge_console_info(ConsoleWrapper* w, const char* msg);
+void bridge_console_info(ConsoleWrapper* w, const char* msg);
 
 #ifdef __cplusplus
 }

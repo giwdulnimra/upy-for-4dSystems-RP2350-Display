@@ -1,21 +1,25 @@
 import time
-from core import led, console
+import core
 
-# 1. LED-Steuerung testen 
-led_pin = 0 
-led = LED(led_pin)
+LED_PIN = 0
+my_console = core.console() # the C-Wrapper registers the classes in lowercase for mpy
+my_led = core.led(LED_PIN)  # even thou the C++-classes are called 'Console' and 'LedDriver'
 
-# 2. Konsolenausgabe testen
-console = Console() # Instanziieren
 
-console.info("Starte LED Test...")  #
+my_console.info("Starting LED Test on Pin %d...", LED_PIN)
 
-led.on()
-console.info("LED sollte jetzt AN sein.") 
-led.status()
+my_led.on()
+my_console.info("LED should be ON now.")
+
+status_bool = my_led.status()
+print("Python verification: LED is", "ON" if status_bool else "OFF")
 
 time.sleep(5)
 
-led.off()
-console.info("LED sollte jetzt AUS sein.")
-print(led.status())
+my_led.off()
+my_console.info("LED should be OFF now.")
+
+status_bool = my_led.status()
+print("Python verification: LED is", "ON" if status_bool else "OFF")
+
+my_console.info("Test finished.")

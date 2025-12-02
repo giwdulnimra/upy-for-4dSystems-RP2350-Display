@@ -1,6 +1,7 @@
 .ignore/*
 build/*
 */.idea/*
+.vscode/*
 */.vscode/*
 *.lnk
 *.docx

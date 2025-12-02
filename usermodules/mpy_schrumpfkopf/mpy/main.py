@@ -1,9 +1,9 @@
 import time
-import core
+import corehead
 
-LED_PIN = 0
-my_console = core.console() # the C-Wrapper registers the classes in lowercase for mpy
-my_led = core.led(LED_PIN)  # even thou the C++-classes are called 'Console' and 'LedDriver'
+LED_PIN = 45
+my_console = corehead.console() # the C-Wrapper registers the classes in lowercase for mpy
+my_led = corehead.led(LED_PIN)  # even thou the C++-classes are called 'Console' and 'LedDriver'
 
 
 my_console.info("Starting LED Test on Pin %d...", LED_PIN)

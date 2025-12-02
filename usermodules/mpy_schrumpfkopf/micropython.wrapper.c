@@ -10,7 +10,7 @@
 #include <stdio.h>          // vsnprintf
 
 // forward declaration of module object
-extern const mp_obj_module_t mp_module_core;
+extern const mp_obj_module_t mp_module_corehead;
 // forward declaration of core subclasses
 extern const mp_obj_type_t mp_type_Core_LED;
 extern const mp_obj_type_t mp_type_Core_Console;
@@ -145,20 +145,20 @@ MP_DEFINE_CONST_OBJ_TYPE(
  * include "led" and "console" classes into "core" module
  */
 // set globals-table of core-module: contains class-objects
-static const mp_rom_map_elem_t core_module_globals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_core) },
+static const mp_rom_map_elem_t module_corehead_globals_table[] = {
+    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_corehead) },
     { MP_ROM_QSTR(MP_QSTR_led), MP_ROM_PTR(&mp_type_Core_LED) },         // core.led
     { MP_ROM_QSTR(MP_QSTR_console), MP_ROM_PTR(&mp_type_Core_Console) }, // core.console
 };
-static MP_DEFINE_CONST_DICT(mp_module_core_globals, core_module_globals_table);
+static MP_DEFINE_CONST_DICT(mp_module_corehead_globals, module_corehead_globals_table);
 
 // module-definition
-const mp_obj_module_t mp_module_core = {
+const mp_obj_module_t mp_module_corehead = {
     .base = { &mp_type_module },
-    .globals = (mp_obj_dict_t*)&mp_module_core_globals,
+    .globals = (mp_obj_dict_t*)&mp_module_corehead_globals,
 };
 
 // register module for Python import: import core
-MP_REGISTER_MODULE(MP_QSTR_core, mp_module_core);
+MP_REGISTER_MODULE(MP_QSTR_corehead, mp_module_corehead);
 
 //} // close extern "C"

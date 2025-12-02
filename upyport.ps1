@@ -1,6 +1,8 @@
 # ---------------- CONFIG -----------------
-$RemoteUser     = "armin"
-$RemoteHost     = "10.19.28.130"
+$config = Get-Content "tools/ssh_server.json" | ConvertFrom-Json
+$RemoteUser     = $config.user
+$RemoteHost     = $config.server
+                  #$config.server_ip
 $LocalBaseDir   = "C:/Users/armin/OneDrive/6FS-MT-Jena_BA/Bachelorarbeit/upy_display_export"
 $TargetBoard    = "4DSYS_RP2350_70"
                   #"RPI_PICO2_W"

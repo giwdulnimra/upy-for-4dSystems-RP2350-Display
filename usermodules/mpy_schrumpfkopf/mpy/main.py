@@ -1,23 +1,25 @@
-import core
 import time
+import core
 
-# 1. LED-Steuerung testen (verwenden Sie einen Pin, der auf Ihrem Board verfügbar ist)
-# Wir verwenden GPIO 0 als Beispielpin
-led_pin = 0 
-led = widget_core.Led(led_pin)
+LED_PIN = 0
+my_console = core.console() # the C-Wrapper registers the classes in lowercase for mpy
+my_led = core.led(LED_PIN)  # even thou the C++-classes are called 'Console' and 'LedDriver'
 
-# 2. Konsolenausgabe testen
-console = widget_core.Console()
 
-console.debug("Starte LED Test...") 
-# Sollte auf der Debug-Konsole erscheinen (printf-Ausgang)
+my_console.info("Starting LED Test on Pin %d...", LED_PIN)
 
-led.turn_on()
-console.info("LED sollte jetzt AN sein.") 
-# Sollte auf der REPL erscheinen
-print(led)
-time.sleep(1)
+my_led.on()
+my_console.info("LED should be ON now.")
 
-led.turn_off()
-console.info("LED sollte jetzt AUS sein.")
-print(led)
+status_bool = my_led.status()
+print("Python verification: LED is", "ON" if status_bool else "OFF")
+
+time.sleep(5)
+
+my_led.off()
+my_console.info("LED should be OFF now.")
+
+status_bool = my_led.status()
+print("Python verification: LED is", "ON" if status_bool else "OFF")
+
+my_console.info("Test finished.")

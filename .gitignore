@@ -1,8 +1,9 @@
 .ignore/*
-build/*
-*/.idea/*
-.vscode/*
-*/.vscode/*
 *.lnk
 *.docx
 *.pdf
+build/*
+.vscode/*
+usermodules/mpy_graphics4d/ws5_export/.vscode/*
+rp2/boards/4DSYS_RP2350_70/.idea/*
+ws5_export/mpy_graphics4d/src/.idea/*

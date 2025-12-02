@@ -1,7 +1,7 @@
-.vscode/*
-.idea/*
 .ignore/*
 build/*
+*/.idea/*
+*/.vscode/*
 *.lnk
 *.docx
 *.pdf
